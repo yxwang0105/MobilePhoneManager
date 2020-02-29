@@ -1,0 +1,3 @@
+include ':app',':core'
+include ':app'
+rootProject.name='MobilePhoneManager'
