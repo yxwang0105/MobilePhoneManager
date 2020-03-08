@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // BluetoothUtil.start(this,BluetoothUtil.FULL_MODE); // 蓝牙耳机开始，注意一部分手机这段代码无效
     }
     private void callActivity(){
-        Intent intent=getPackageManager().getLaunchIntentForPackage("com.tencent.mobileqq");
+        Intent intent=getPackageManager().getLaunchIntentForPackage("com.icbc");
         startActivity(intent);
     }
     @Override
