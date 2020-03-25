@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String TAG="MainActivity";
     public static final int MANIFEST_CODE=0;
     private boolean isFirstResuming=false;
+    private NLP nlp;
     private ServiceConnection connection=new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
     private void handleMsg(Message message){
-        String requirement=message.obj.toString();
+        final String requirement=message.obj.toString();
         this.requirement.setText(message.obj.toString());
         OpenActivity(requirement);
     }
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initPermission();
         initMyRecognizer();
         isFirstResuming=true;
+        nlp=new NLP();
         Log.d("MainActivity","init is ok");
     }
 
@@ -245,8 +247,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // BluetoothUtil.start(this,BluetoothUtil.FULL_MODE); // 蓝牙耳机开始，注意一部分手机这段代码无效
     }
     private void callActivity(){
-        Intent intent=getPackageManager().getLaunchIntentForPackage("com.icbc");
-        startActivity(intent);
+       new Thread(new Runnable() {
+           @Override
+           public void run() {
+               NLP i=new NLP();
+               JSONObject jsonObject=i.getJSONObject("");
+               i.fromPos(jsonObject,"v");
+           }
+       }).start();
     }
     @Override
     public void onClick(View v) {
