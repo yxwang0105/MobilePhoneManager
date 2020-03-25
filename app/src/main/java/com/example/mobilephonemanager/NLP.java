@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -36,8 +37,8 @@ public class NLP {
     }
 
     public JSONObject getJSONObject(String text) {
-        text="百度是一家高科技公司";
-        JSONObject res = client.lexer(text, null);
+        JSONObject res = client.lexer(text,null);
+        Log.d("acca",res.toString());
         return res;
     }
 

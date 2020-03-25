@@ -22,8 +22,11 @@ android {
 }
 
 
-
 dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation files('libs/aip-java-sdk-4.13.0.jar')
+    implementation files('libs/slf4j-api-1.7.25.jar')
+    implementation files('libs/json-20160810.jar')
+    implementation files('libs/slf4j-simple-1.7.25.jar')
 }

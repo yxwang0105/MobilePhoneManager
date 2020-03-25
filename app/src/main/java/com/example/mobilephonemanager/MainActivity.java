@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -35,9 +36,17 @@ import com.baidu.speech.asr.SpeechConstant;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
+
+import resource.HashName;
+import resource.SpecialHashName;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button start;
@@ -49,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String TAG="MainActivity";
     public static final int MANIFEST_CODE=0;
     private boolean isFirstResuming=false;
+    private HashName AppName=new HashName();
+    private SpecialHashName specialHashName=new SpecialHashName();
     private NLP nlp;
     private ServiceConnection connection=new ServiceConnection() {
         @Override
@@ -68,19 +79,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected MyRecognizer myRecognizer;
     Handler handler=new Handler() {
         @Override
-        public void handleMessage(@NonNull Message msg) {
+        public void handleMessage(@NonNull Message msg) {//语音识别的通信
             super.handleMessage(msg);
             handleMsg(msg);
         }
     };
-    private void handleMsg(Message message){
-        final String requirement=message.obj.toString();
-        this.requirement.setText(message.obj.toString());
-        OpenActivity(requirement);
+    private Handler handler_son;//传递给自然语音分析模块的子线程的通信
+
+    /**
+     * 首先分析是否存在特殊App名，如果存在则直接发送给openActivity;若没有再发送给子线程
+     * @param message
+     */
+    private void handleMsg(final Message message){
+        String requirement=message.obj.toString();
+        Iterator iter = specialHashName.maps.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            Object key = entry.getKey();
+            if(requirement.contains((String)key)) {
+                List<String> list = new ArrayList<>();
+                list.add((String) key);
+                openActivity(list);
+                return;
+            }
+        }
+        sendMessage(requirement);
     }
-    private void OpenActivity(String req){
-        if(req.contains("qq")||req.contains("QQ")||req.contains("Qq")||req.contains("qQ")){
-            callActivity();
+
+    /**
+     * 用于自然语言分析线程
+     * @param msg
+     */
+    private void sendMessage(String msg){
+        if(handler_son!=null){
+            Message message=Message.obtain();
+            message.obj=msg;
+            handler_son.sendMessage(message);
+        }
+    }
+
+    /**
+     * 目前存在饿了吗类似于问句的应用无法处理
+     * @param names
+     */
+    private void openActivity(List<String> names){
+        if(names.isEmpty()){
+            return;
+        }
+        String name=names.get(0);
+        if(AppName.maps.containsKey(name)){
+            PackageManager packageManager = getPackageManager();
+            Intent intent =packageManager.getLaunchIntentForPackage(AppName.maps.get(name));
+            Log.d("qqqc",AppName.maps.get(name));
+            startActivity(intent);
         }
     }
     @Override
@@ -92,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initMyRecognizer();
         isFirstResuming=true;
         nlp=new NLP();
+        new ConnectThread().start();
         Log.d("MainActivity","init is ok");
     }
 
@@ -247,14 +299,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // BluetoothUtil.start(this,BluetoothUtil.FULL_MODE); // 蓝牙耳机开始，注意一部分手机这段代码无效
     }
     private void callActivity(){
-       new Thread(new Runnable() {
-           @Override
-           public void run() {
-               NLP i=new NLP();
-               JSONObject jsonObject=i.getJSONObject("");
-               i.fromPos(jsonObject,"v");
-           }
-       }).start();
+        Iterator iter = specialHashName.maps.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            Object key = entry.getKey();
+            Object val = entry.getValue();
+        }
+    }
+    class ConnectThread extends Thread{
+        @Override
+        public void run() {
+            super.run();
+            Looper.prepare();
+            handler_son=new Handler(){
+                @Override
+                public void handleMessage(@NonNull Message msg) {
+                    super.handleMessage(msg);
+                    String requirement=(String)msg.obj;
+                    JSONObject jsonObject=nlp.getJSONObject(requirement);
+                    List<String> name=nlp.fromPos(jsonObject,"nz");
+                    openActivity(name);
+                }
+            };
+            Looper.loop();
+        }
     }
     @Override
     public void onClick(View v) {

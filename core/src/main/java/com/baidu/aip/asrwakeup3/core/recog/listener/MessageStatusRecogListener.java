@@ -6,6 +6,8 @@ import android.util.Log;
 import com.baidu.aip.asrwakeup3.core.recog.RecogResult;
 import com.baidu.speech.asr.SpeechConstant;
 
+import org.json.JSONObject;
+
 /**
  * Created by fujiayi on 2017/6/16.
  */
@@ -55,8 +57,8 @@ public class MessageStatusRecogListener extends StatusRecogListener {
     public void onAsrFinalResult(String[] results, RecogResult recogResult) {
         super.onAsrFinalResult(results, recogResult);
         String message = "识别结束，结果是”" + results[0] + "”";
-        sendStatusMessage(SpeechConstant.CALLBACK_EVENT_ASR_PARTIAL,
-                message + "；原始json：" + recogResult.getOrigalJson());
+        //sendStatusMessage(SpeechConstant.CALLBACK_EVENT_ASR_PARTIAL,
+          //      message + "；原始json：" + recogResult.getOrigalJson());
         if (speechEndTime > 0) {
         //    long currentTime = System.currentTimeMillis();
            // long diffTime = currentTime - speechEndTime;
@@ -64,6 +66,7 @@ public class MessageStatusRecogListener extends StatusRecogListener {
 
         }
         speechEndTime = 0;
+        Log.d("accc",results[0]);
         sendMessage(results[0]);
     }
 
