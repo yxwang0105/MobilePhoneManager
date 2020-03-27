@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected boolean enableOffline;
     public static final String TAG="MainActivity";
     public static final int MANIFEST_CODE=0;
-    private boolean isFirstResuming=false;
+    public boolean isFirstResuming=false;
     private HashName AppName=new HashName();
     private SpecialHashName specialHashName=new SpecialHashName();
     private NLP nlp;
@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onServiceConnected(ComponentName name, IBinder service) {
             wakeUpBinder=(WakeUpService.WakeUpBinder)service;
             wakeUpBinder.start();
+            isFirstResuming=false;
         }
 
         @Override
@@ -130,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(AppName.maps.containsKey(name)){
             PackageManager packageManager = getPackageManager();
             Intent intent =packageManager.getLaunchIntentForPackage(AppName.maps.get(name));
-            Log.d("qqqc",AppName.maps.get(name));
             startActivity(intent);
         }
     }
@@ -160,8 +160,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onStop();
     }
 
+    /**
+     * 第一次启动时，方法不执行
+     * 接下来如果遇到语音唤醒相当于重启，所以不执行
+     * 但如果是遇到手动返回，则执行该方法，手动注销服务
+     */
     @Override
     protected void onResume() {
+        Log.d("MainActivity","is on resuming");
         Log.d("WakeUpService",isFirstResuming+"");
         if(!isFirstResuming) {
             unbindService(connection);
