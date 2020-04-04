@@ -32,9 +32,16 @@ import com.baidu.speech.EventListener;
 import com.baidu.speech.EventManager;
 import com.baidu.speech.EventManagerFactory;
 import com.baidu.speech.asr.SpeechConstant;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,6 +52,14 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import interfaces.heweather.com.interfacesmodule.bean.Code;
+import interfaces.heweather.com.interfacesmodule.bean.Lang;
+import interfaces.heweather.com.interfacesmodule.bean.Unit;
+import interfaces.heweather.com.interfacesmodule.bean.weather.lifestyle.Lifestyle;
+import interfaces.heweather.com.interfacesmodule.bean.weather.now.Now;
+import interfaces.heweather.com.interfacesmodule.bean.weather.now.NowBase;
+import interfaces.heweather.com.interfacesmodule.view.HeConfig;
+import interfaces.heweather.com.interfacesmodule.view.HeWeather;
 import resource.HashName;
 import resource.SpecialHashName;
 
@@ -55,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView requirement;
     private WakeUpService.WakeUpBinder wakeUpBinder;
     protected boolean enableOffline;
-    public static final String TAG="MainActivity";
+    public static final String TAG="weather";
     public static final int MANIFEST_CODE=0;
     public boolean isFirstResuming=false;
     private HashName AppName=new HashName();
@@ -138,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         initView();
         initPermission();
         initMyRecognizer();
@@ -305,12 +321,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // BluetoothUtil.start(this,BluetoothUtil.FULL_MODE); // 蓝牙耳机开始，注意一部分手机这段代码无效
     }
     private void callActivity(){
-        Iterator iter = specialHashName.maps.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            Object key = entry.getKey();
-            Object val = entry.getValue();
-        }
+      Weather weather=new Weather();
+      weather.getLifeStyle(MainActivity.this,"新沂");
     }
     class ConnectThread extends Thread{
         @Override
