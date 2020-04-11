@@ -321,8 +321,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // BluetoothUtil.start(this,BluetoothUtil.FULL_MODE); // 蓝牙耳机开始，注意一部分手机这段代码无效
     }
     private void callActivity(){
-      Weather weather=new Weather();
-      weather.getLifeStyle(MainActivity.this,"新沂");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                nlp.sample();
+            }
+        }).start();
+
+
+
+
+
     }
     class ConnectThread extends Thread{
         @Override
