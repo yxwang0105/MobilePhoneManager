@@ -94,6 +94,7 @@ public class NLP {
      * 做依存句法分析找出不同句法的词
      */
     public List<String> getDeprel(String text,String deprel){
+        Log.d("aasasa",text+" "+deprel);
         List<String> list=new ArrayList<>();
         if(deprel==null||"".equals(deprel)||text==null||"".equals(text))
             return null;
@@ -114,5 +115,17 @@ public class NLP {
             e.printStackTrace();
         }
         return list;
+    }
+    public void sample() {
+        String text = "用备忘录记录一下钥匙在车库里";
+
+        // 传入可选参数调用接口
+        HashMap<String, Object> options = new HashMap<String, Object>();
+        options.put("mode", 0);
+
+        // 依存句法分析
+        JSONObject res = client.depParser(text, options);
+        Log.d("testSample",res.toString());
+
     }
 }

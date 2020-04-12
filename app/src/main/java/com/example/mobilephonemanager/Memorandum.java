@@ -1,15 +1,21 @@
 package com.example.mobilephonemanager;
 
+import android.util.Log;
+
 import org.litepal.LitePal;
 import org.litepal.crud.LitePalSupport;
 
 import java.util.List;
 
+/**
+ * 目前存在一个问题就是怎么才能实现尽可能少的使用getDatabase这个方法
+ */
 public class Memorandum {
     public static void getDatabase(){
         LitePal.getDatabase();
     }
     public static void add(String buildTime,String content){
+        Log.d("aaaasasa",buildTime+" "+content);
         if(buildTime==null||content==null)
             return;
         MemorandumData data=new MemorandumData();

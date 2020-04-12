@@ -321,17 +321,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // BluetoothUtil.start(this,BluetoothUtil.FULL_MODE); // 蓝牙耳机开始，注意一部分手机这段代码无效
     }
     private void callActivity(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                nlp.sample();
-            }
-        }).start();
-
-
-
-
-
+        MemorandumHelper memorandumHelper=new MemorandumHelper();
+        memorandumHelper.process("用备忘录记录一下钥匙在车库里");
     }
     class ConnectThread extends Thread{
         @Override
