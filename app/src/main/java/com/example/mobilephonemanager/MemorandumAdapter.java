@@ -63,4 +63,49 @@ public class MemorandumAdapter {
         else
             return data.substring(hed_position+size);
     }
+    public static String getQueryDataModeOne(String data){
+        int loc1=data.indexOf("有关于");
+        int loc2=data.indexOf("的内容");
+        if(loc1==-1||loc2==-1)
+            return null;
+        String data1=data.substring(loc1,loc2);
+        return data1;
+    }
+    public static String getQueryDataModeTwo(String data){
+        int loc1=data.indexOf("日期为");
+        int loc2=data.indexOf("的内容");
+        if(loc1==-1||loc2==-1)
+            return null;
+        String data2=data.substring(loc1,loc2);
+        return data2;
+    }
+    public static int getDeleteMode(String data){
+        if(data.contains("删除所有内容"))
+            return 0;
+        if(data.contains("日期为")&&data.contains("关于"))
+            return 1;
+        if(data.contains("日期为"))
+            return 2;
+        if(data.contains("关于"))
+            return 3;
+        return -1;
+    }
+    public static String[] getDeleteModeOne(String data){
+        String[] result=new String[2];
+        int loc1=data.indexOf("日期为");
+        int loc2=data.indexOf("有关于");
+        result[0]=data.substring(loc1,loc2);
+        result[1]=data.substring(loc2);
+        return result;
+    }
+    public static String getDeleteModeTwo(String data){
+        int loc=data.indexOf("日期为");
+        String result=data.substring(loc);
+        return result;
+    }
+    public static String getDeleteModeThree(String data){
+        int loc=data.indexOf("有关于");
+        String result=data.substring(loc);
+        return result;
+    }
 }

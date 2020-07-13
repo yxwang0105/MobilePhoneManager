@@ -1,7 +1,5 @@
 package com.example.mobilephonemanager;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -32,8 +30,9 @@ import com.baidu.speech.EventListener;
 import com.baidu.speech.EventManager;
 import com.baidu.speech.EventManagerFactory;
 import com.baidu.speech.asr.SpeechConstant;
-import com.google.gson.Gson;
 
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -95,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected MyRecognizer myRecognizer;
     Handler handler=new Handler() {
         @Override
-        public void handleMessage(@NonNull Message msg) {//语音识别的通信
+        public void handleMessage(Message msg) {//语音识别的通信
             super.handleMessage(msg);
             handleMsg(msg);
         }
@@ -322,7 +321,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     private void callActivity(){
         MemorandumHelper memorandumHelper=new MemorandumHelper();
-        memorandumHelper.process("用备忘录记录一下钥匙在车库里");
+        memorandumHelper.process("用备忘录删除所有内容");
+
     }
     class ConnectThread extends Thread{
         @Override
@@ -331,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Looper.prepare();
             handler_son=new Handler(){
                 @Override
-                public void handleMessage(@NonNull Message msg) {
+                public void handleMessage(Message msg) {
                     super.handleMessage(msg);
                     String requirement=(String)msg.obj;
                     JSONObject jsonObject=nlp.getJSONObject(requirement);

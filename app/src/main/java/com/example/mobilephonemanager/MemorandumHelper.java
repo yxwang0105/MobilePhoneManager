@@ -2,11 +2,21 @@ package com.example.mobilephonemanager;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.json.JSONObject;
+import org.litepal.LitePal;
+import org.litepal.crud.LitePalSupport;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * 工作流程
@@ -31,23 +41,20 @@ import java.util.List;
  *
  *
  * 接下来就是查询问题
- * 我们首先考虑一下我们会怎样使用查询功能呢？
- * 一般来说我们大概会问如下几种问题
- * 1、“用备忘录查询一下我的钥匙在哪”
- * 2、“我的钥匙在哪”
- * 3、“查询备忘录中我的钥匙在哪”
- * 4、“用备忘录查询关于我钥匙的情报”
- * 5、“将备忘录中所有内容读出来”
- * 注意，在这里面，我们一般不考虑类似于此类的问题“我最近有没有什么安排”，因为备忘录的主要作用应该是记录不包含命中时间的一般性情报，那些较为特殊的应该由主程序判断交给闹钟等程序来主动提醒或者被动读取
- * 其次，在这里面我们也不考虑第二种情况，因为水平着实不太够（笑）
- * 所以，内容就很明确了，首先我们可以意识到重要的内容应该是“查询”或者“备忘录”之后的内容，这两种都比较符合常用语序
- * 那么之后的内容我们将数据库中所有的内容提取，用语义上的匹配来完成就可以了，匹配度最高的大概就是了。
- * 但是这其中也有一些问题，比如关于钥匙的情报有很多，匹配度最高的不一定就是想要的答案。
- * 最好的办法就是划定一个大致的范围，然后在范围中取前几名返回结果
- * 那么这个范围该如何划分呢
- * 这其中都有一个前提，这个软件需要一个总体的判断，判断出一定是使用备忘录这一个功能
- * 目前希望做出一个总体的判断器，比如，当我们说“用备忘录记一下笔记本放在了抽屉里”，就会使用备忘录。但是这样的话当我们说“记一下笔记本放在了抽屉里”就没有办法了
+ * 我们首先知道我们在这里实际上已经进入了备忘录的功能，那么在这里备忘录这个词已经不重要了，接下来对我们重要的“查询”这个词实际上也是已经出现了的，那么这个对我们也不重要了。
+ * 我们具体分析其中的内容，我们需要支持几种问法，不可能做出所有的问法，这是首先我们需要知道的问题。
+ * 1、用备忘录查询有关于“钥匙”的内容（关键字查找）。
+ * 2、用备忘录查询日期为“7月15日”的内容（时间）。
  *
+ *
+ *
+ *
+ * 接下来就是删除问题
+ * 我们直接规定几种格式来进行删除
+ * 1、备忘录删除所有内容
+ * 2、备忘录删除有关于“钥匙”的内容（关键字删除）。
+ * 3、备忘录删除日期为“2020年7月15日”的内容（时间）。
+ * 4、备忘录删除日期为“2020年7月15日”，有关于“钥匙”的内容（双条件）。
  */
 public class MemorandumHelper {
     //三个最基本的指令
@@ -58,6 +65,7 @@ public class MemorandumHelper {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Log.d("testMem",saying);
                 if(saying==null||"".equals(saying))
                     return;
                 NLP nlp=new NLP();
@@ -66,16 +74,58 @@ public class MemorandumHelper {
                 for(int i=0;i<list.size();i++){
                     if(Double.parseDouble(nlp.sameScore(SAVE,list.get(i)))>0.5){
                         String save=MemorandumAdapter.getSaveContent(saying);
-                        Log.d("aaaasasa",save);
                         Memorandum.getDatabase();
-                        SimpleDateFormat formatter=new SimpleDateFormat   ("yyyy年MM月dd日HH:mm:ss");
+                        SimpleDateFormat formatter=new SimpleDateFormat   ("yyyy年MM月dd日");
                         Date curDate =  new Date(System.currentTimeMillis());
                         String str = formatter.format(curDate);
                         Memorandum.add(str,save);
                     }else if(Double.parseDouble(nlp.sameScore(QUERY,list.get(i)))>0.5){
-
+                        String q1=MemorandumAdapter.getQueryDataModeOne(saying);
+                        String q2=MemorandumAdapter.getQueryDataModeTwo(saying);
+                        String query=null;
+                        boolean flag=false;
+                        if(q1==null&&q2==null)
+                            return;
+                        if(q1==null)
+                            query=q2;
+                        else {
+                            query = q1;
+                            flag=true;
+                        }
+                        Memorandum.getDatabase();
+                        List<MemorandumData> query_list=Memorandum.findAll();
+                        List<String> result=new LinkedList<>();
+                        if(flag==true){
+                            for(int j=0;j<query_list.size();j++)
+                                if(query_list.get(i).getContent().contains(query))
+                                    result.add(query_list.get(i).getContent());
+                        }
+                        else{
+                            for(int j=0;j<query_list.size();j++)
+                                if(query_list.get(i).getBuildTime().contains(query))
+                                    result.add(query_list.get(i).getContent());
+                        }
+                        //接下来使用语音模块进行播报
                     }else if(Double.parseDouble(nlp.sameScore(DELETE,list.get(i)))>0.5){
-
+                        Log.d("testMem",saying);
+                        Memorandum.getDatabase();
+                        int mode=MemorandumAdapter.getDeleteMode(saying);
+                        if(mode==0)
+                          LitePal.deleteAll(MemorandumData.class,null);
+                        else if(mode==1) {
+                            String[] data=MemorandumAdapter.getDeleteModeOne(saying);
+                            LitePal.deleteAll(MemorandumData.class,"buildTime=? and content=?",data[0],data[1]);
+                        }
+                        else if(mode==2){
+                            String data=MemorandumAdapter.getDeleteModeTwo(saying);
+                            LitePal.deleteAll(MemorandumData.class,"buildTime=?",data);
+                        }
+                        else if(mode==3){
+                            String data=MemorandumAdapter.getDeleteModeThree(saying);
+                            LitePal.deleteAll(MemorandumData.class,"content=?",data);
+                        }
+                        else
+                            return;
                     }
 
                 }

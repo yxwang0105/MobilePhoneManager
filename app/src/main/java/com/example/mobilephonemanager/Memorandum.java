@@ -15,7 +15,6 @@ public class Memorandum {
         LitePal.getDatabase();
     }
     public static void add(String buildTime,String content){
-        Log.d("aaaasasa",buildTime+" "+content);
         if(buildTime==null||content==null)
             return;
         MemorandumData data=new MemorandumData();
