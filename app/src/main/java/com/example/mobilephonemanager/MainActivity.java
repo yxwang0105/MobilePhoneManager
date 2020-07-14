@@ -107,18 +107,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void handleMsg(final Message message){
         String requirement=message.obj.toString();
-        Iterator iter = specialHashName.maps.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            Object key = entry.getKey();
-            if(requirement.contains((String)key)) {
-                List<String> list = new ArrayList<>();
-                list.add((String) key);
-                openActivity(list);
-                return;
+        String judgement=Judge.judge(requirement);
+        if(judgement.equals("1")) {
+            Iterator iter = specialHashName.maps.entrySet().iterator();
+            while (iter.hasNext()) {
+                Map.Entry entry = (Map.Entry) iter.next();
+                Object key = entry.getKey();
+                if (requirement.contains((String) key)) {
+                    List<String> list = new ArrayList<>();
+                    list.add((String) key);
+                    openActivity(list);
+                    return;
+                }
+            }
+            sendMessage(requirement);
+        }
+        else{
+            if(judgement.equals(Judge.Memorandum)){
+                MemorandumHelper memorandumHelper=new MemorandumHelper();
+                memorandumHelper.process(requirement);
+            }
+            if(judgement.equals(Judge.Weather)){
+                Weather weather=new Weather();
+                //开启天气功能
             }
         }
-        sendMessage(requirement);
     }
 
     /**
@@ -152,14 +165,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         initView();
         initPermission();
         initMyRecognizer();
         isFirstResuming=true;
         nlp=new NLP();
         new ConnectThread().start();
-        Log.d("MainActivity","init is ok");
     }
 
     @Override
