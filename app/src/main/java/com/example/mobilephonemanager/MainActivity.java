@@ -64,7 +64,6 @@ import resource.SpecialHashName;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button start;
-    private Button stop;
     private Button test;
     private TextView requirement;
     private WakeUpService.WakeUpBinder wakeUpBinder;
@@ -273,11 +272,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     private void initView(){
         start=(Button)findViewById(R.id.start);
-        stop=(Button)findViewById(R.id.stop);
         test=(Button)findViewById(R.id.test);
         requirement=(TextView)findViewById(R.id.requirment);
         start.setOnClickListener(this);
-        stop.setOnClickListener(this);
         test.setOnClickListener(this);
     }
     private void initPermission() {
@@ -358,9 +355,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()){
             case R.id.start:
                 start();
-                break;
-            case R.id.stop:
-                stop();
                 break;
             case R.id.test:
                 callActivity();
