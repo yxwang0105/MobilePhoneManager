@@ -1,9 +1,7 @@
 package com.example.mobilephonemanager;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -14,54 +12,27 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.baidu.aip.asrwakeup3.core.mini.ActivityMiniRecog;
 import com.baidu.aip.asrwakeup3.core.mini.AutoCheck;
 import com.baidu.aip.asrwakeup3.core.recog.MyRecognizer;
 import com.baidu.aip.asrwakeup3.core.recog.listener.IRecogListener;
 import com.baidu.aip.asrwakeup3.core.recog.listener.MessageStatusRecogListener;
 import com.baidu.aip.asrwakeup3.core.util.bluetooth.OfflineRecogParams;
-import com.baidu.speech.EventListener;
-import com.baidu.speech.EventManager;
-import com.baidu.speech.EventManagerFactory;
 import com.baidu.speech.asr.SpeechConstant;
-
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
-
-import interfaces.heweather.com.interfacesmodule.bean.Code;
-import interfaces.heweather.com.interfacesmodule.bean.Lang;
-import interfaces.heweather.com.interfacesmodule.bean.Unit;
-import interfaces.heweather.com.interfacesmodule.bean.weather.lifestyle.Lifestyle;
-import interfaces.heweather.com.interfacesmodule.bean.weather.now.Now;
-import interfaces.heweather.com.interfacesmodule.bean.weather.now.NowBase;
-import interfaces.heweather.com.interfacesmodule.view.HeConfig;
-import interfaces.heweather.com.interfacesmodule.view.HeWeather;
 import resource.HashName;
 import resource.SpecialHashName;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button start;
     private Button test;
@@ -105,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * @param message
      */
     private void handleMsg(final Message message){
-        String requirement=message.obj.toString();
+        final String requirement=message.obj.toString();
         String judgement=Judge.judge(requirement);
         if(judgement.equals("1")) {
             Iterator iter = specialHashName.maps.entrySet().iterator();
@@ -129,6 +100,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(judgement.equals(Judge.Weather)){
                 Weather weather=new Weather();
                 //开启天气功能
+            }
+            if(judgement.equals(Judge.QQ)){
+                String people= QHelper.getPeople(requirement);
+                String content=QHelper.getContent(requirement);
+                QService.saying=content;
+                QHelper.openQQ(MainActivity.this,1,people);
             }
         }
     }
@@ -160,6 +137,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         }
     }
+    public void initAccess(){
+        if (!QService.isStart()) {
+            try {
+                this.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+            } catch (Exception e) {
+                this.startActivity(new Intent(Settings.ACTION_SETTINGS));
+                e.printStackTrace();
+            }
+        }
+    }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -167,9 +154,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         initPermission();
         initMyRecognizer();
+        initAccess();
         isFirstResuming=true;
         nlp=new NLP();
         new ConnectThread().start();
+
     }
 
     @Override
@@ -192,13 +181,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     protected void onResume() {
-        Log.d("MainActivity","is on resuming");
-        Log.d("WakeUpService",isFirstResuming+"");
         if(!isFirstResuming) {
             unbindService(connection);
             initMyRecognizer();
             isFirstResuming=false;
-            Log.d("WakeUpService","is unbind");
         }
         super.onResume();
     }
@@ -328,9 +314,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // BluetoothUtil.start(this,BluetoothUtil.FULL_MODE); // 蓝牙耳机开始，注意一部分手机这段代码无效
     }
     private void callActivity(){
-        MemorandumHelper memorandumHelper=new MemorandumHelper();
-        memorandumHelper.process("用备忘录删除所有内容");
-
+        QHelper.openQQ(this,1,"568359539");
     }
     class ConnectThread extends Thread{
         @Override
