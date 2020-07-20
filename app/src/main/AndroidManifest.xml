@@ -26,7 +26,7 @@
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".QService"
+            android:name=".AccessService"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">

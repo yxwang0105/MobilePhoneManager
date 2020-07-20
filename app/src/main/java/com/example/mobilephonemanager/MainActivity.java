@@ -33,6 +33,9 @@ import java.util.List;
 import java.util.Map;
 import resource.HashName;
 import resource.SpecialHashName;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button start;
     private Button test;
@@ -104,8 +107,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(judgement.equals(Judge.QQ)){
                 String people= QHelper.getPeople(requirement);
                 String content=QHelper.getContent(requirement);
-                QService.saying=content;
+                AccessService.QQ_saying=content;
                 QHelper.openQQ(MainActivity.this,1,people);
+            }
+            if(judgement.equals(Judge.WeChat)){
+                String people=QHelper.getPeople(requirement);
+                String content=QHelper.getContent(requirement);
+                AccessService.WeChat_people=people;
+                AccessService.WeChat_saying=content;
+                List<String> list=new ArrayList<>();
+                list.add("微信");
+                openActivity(list);
             }
         }
     }
@@ -138,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
     public void initAccess(){
-        if (!QService.isStart()) {
+        if (!AccessService.isStart()) {
             try {
                 this.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
             } catch (Exception e) {
@@ -314,7 +326,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // BluetoothUtil.start(this,BluetoothUtil.FULL_MODE); // 蓝牙耳机开始，注意一部分手机这段代码无效
     }
     private void callActivity(){
-        QHelper.openQQ(this,1,"568359539");
+        PackageManager packageManager = getPackageManager();
+        Intent intent =packageManager.getLaunchIntentForPackage(AppName.maps.get("微信"));
+        startActivity(intent);
     }
     class ConnectThread extends Thread{
         @Override
