@@ -327,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     private void callActivity(){
         PackageManager packageManager = getPackageManager();
-        Intent intent =packageManager.getLaunchIntentForPackage(AppName.maps.get("微信"));
+        Intent intent =packageManager.getLaunchIntentForPackage(AppName.maps.get("饿了吗"));
         startActivity(intent);
     }
     class ConnectThread extends Thread{
