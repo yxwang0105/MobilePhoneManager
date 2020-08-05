@@ -119,6 +119,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 list.add("微信");
                 openActivity(list);
             }
+            if(judgement.equals(Judge.ELE)){
+                String key=EleHelper.getKey(requirement);
+                AccessService.ELE_saying=key;
+                List<String> list=new ArrayList<>();
+                list.add("饿了吗");
+                openActivity(list);
+            }
         }
     }
 
