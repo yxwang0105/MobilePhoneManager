@@ -34,8 +34,6 @@ import java.util.Map;
 import resource.HashName;
 import resource.SpecialHashName;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button start;
     private Button test;
@@ -333,9 +331,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // BluetoothUtil.start(this,BluetoothUtil.FULL_MODE); // 蓝牙耳机开始，注意一部分手机这段代码无效
     }
     private void callActivity(){
-        PackageManager packageManager = getPackageManager();
-        Intent intent =packageManager.getLaunchIntentForPackage(AppName.maps.get("饿了吗"));
-        startActivity(intent);
     }
     class ConnectThread extends Thread{
         @Override

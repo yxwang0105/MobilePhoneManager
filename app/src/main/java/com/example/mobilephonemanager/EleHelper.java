@@ -1,5 +1,7 @@
 package com.example.mobilephonemanager;
 
+import android.util.Log;
+
 /**
  * 格式为搜索以。。。为关键词的外卖
  */
@@ -8,8 +10,10 @@ public class EleHelper {
         int loc1=saying.indexOf("以");
         int loc2=saying.indexOf("为关键词的外卖");
         String key=null;
-        if(loc1!=-1&&loc2!=-1)
-            key=saying.substring(loc1,loc2);
+        if(loc1!=-1&&loc2!=-1) {
+            key = saying.substring(loc1+1, loc2);
+            Log.d("asasas",key);
+        }
         return key;
     }
 }
