@@ -4,11 +4,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
-
 import org.litepal.LitePal;
-
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,7 +25,7 @@ public class AccessService extends AccessibilityService {
     public static String WeChat_saying;
     public static String WeChat_people;
     public static String ELE_saying;
-
+    public static boolean random;
     public static boolean isStart() {
         return mAccservice != null;
     }
@@ -107,6 +104,10 @@ public class AccessService extends AccessibilityService {
                             arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, ELE_saying);
                             editInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
                             WechatUtils.findTextAndClick(mAccservice, "搜索");
+                            if(random=true) {
+                                random=false;
+                                WechatUtils.findTextAndClick(mAccservice, ELE_saying);
+                            }
                         }
                     }
                 }

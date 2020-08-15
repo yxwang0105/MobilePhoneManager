@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import resource.HashName;
@@ -143,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 目前存在饿了吗类似于问句的应用无法处理
      * @param names
      */
-    private void openActivity(List<String> names){
+    public void openActivity(List<String> names){
         if(names.isEmpty()){
             return;
         }
@@ -152,6 +153,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             PackageManager packageManager = getPackageManager();
             Intent intent =packageManager.getLaunchIntentForPackage(AppName.maps.get(name));
             startActivity(intent);
+        }
+    }
+    public void randomSelect(){
+        String store=EleHelper.analyse();
+        if(store!=null) {
+            AccessService.ELE_saying = store;
+            AccessService.random = true;
+            List<String> list=new LinkedList<>();
+            list.add(AppName.maps.get("饿了吗"));
+            openActivity(list);
         }
     }
     public void initAccess(){

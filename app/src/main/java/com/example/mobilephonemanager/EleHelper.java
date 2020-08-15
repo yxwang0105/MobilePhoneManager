@@ -1,5 +1,6 @@
 package com.example.mobilephonemanager;
 
+import android.content.Intent;
 import android.util.Log;
 import org.litepal.LitePal;
 import java.text.SimpleDateFormat;
@@ -24,7 +25,7 @@ public class EleHelper {
         }
         return key;
     }
-    private static String analyse(){
+    public static String analyse(){
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss");
         String time = formatter.format(date);
