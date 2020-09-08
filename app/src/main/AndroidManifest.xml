@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
+
     <application
         android:name="org.litepal.LitePalApplication"
         android:allowBackup="true"
@@ -21,6 +22,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat">
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
         <service
             android:name=".WakeUpService"
             android:enabled="true"

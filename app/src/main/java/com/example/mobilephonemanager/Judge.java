@@ -26,8 +26,11 @@ public class Judge {
             judgement+="0";
         if(data.contains("微信")&&data.contains("发送"))
             judgement+="1";
-        if(data.contains("外卖")&&!data.contains("备忘录"))
+        if(data.contains("外卖")&&!data.contains("备忘录")){
             judgement+="00";
+            if(data.contains("点一份外卖"))
+                MainActivity.ELE_RANDOM=true;
+        }
         return judgement;
 
     }

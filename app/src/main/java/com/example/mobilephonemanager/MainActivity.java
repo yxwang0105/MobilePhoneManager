@@ -24,6 +24,7 @@ import com.baidu.aip.asrwakeup3.core.recog.listener.IRecogListener;
 import com.baidu.aip.asrwakeup3.core.recog.listener.MessageStatusRecogListener;
 import com.baidu.aip.asrwakeup3.core.util.bluetooth.OfflineRecogParams;
 import com.baidu.speech.asr.SpeechConstant;
+
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private HashName AppName=new HashName();
     private SpecialHashName specialHashName=new SpecialHashName();
     private NLP nlp;
+    public static boolean ELE_RANDOM;
+    public TextToVoice textToVoice;
     private ServiceConnection connection=new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -119,11 +122,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 openActivity(list);
             }
             if(judgement.equals(Judge.ELE)){
-                String key=EleHelper.getKey(requirement);
-                AccessService.ELE_saying=key;
-                List<String> list=new ArrayList<>();
-                list.add("饿了吗");
-                openActivity(list);
+                if(ELE_RANDOM=true) {
+                    ELE_RANDOM=false;
+                    randomSelect();
+                }
+                else {
+                    String key = EleHelper.getKey(requirement);
+                    AccessService.ELE_saying = key;
+                    List<String> list = new ArrayList<>();
+                    list.add("饿了吗");
+                    openActivity(list);
+                }
             }
         }
     }
@@ -186,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         isFirstResuming=true;
         nlp=new NLP();
         new ConnectThread().start();
-
+        this.textToVoice=new TextToVoice(this);
     }
 
     @Override
@@ -277,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 基于DEMO5.1 卸载离线资源(离线时使用) release()方法中封装了卸载离线资源的过程
         // 基于DEMO的5.2 退出事件管理器
         myRecognizer.release();
-
+        this.textToVoice.onDestroy();
         //Log.i(TAG, "onDestory");
 
         // BluetoothUtil.destory(this); // 蓝牙关闭
@@ -341,8 +350,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // BluetoothUtil.start(this,BluetoothUtil.FULL_MODE); // 蓝牙耳机开始，注意一部分手机这段代码无效
     }
-    private void callActivity(){
+    private void callActivity() {
+            this.textToVoice.submit("弱啊，巫乐文");
     }
+
     class ConnectThread extends Thread{
         @Override
         public void run() {
