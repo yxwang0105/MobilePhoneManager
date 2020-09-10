@@ -61,6 +61,10 @@ public class MemorandumHelper {
     private static final String SAVE="记录";
     private static final String QUERY="查询";
     private static final String DELETE="删除";
+    private TextToVoice textToVoice;
+    public MemorandumHelper(TextToVoice textToVoice ){
+        this.textToVoice=textToVoice;
+    }
     public void process(final String saying){
         new Thread(new Runnable() {
             @Override
@@ -105,7 +109,15 @@ public class MemorandumHelper {
                                 if(query_list.get(i).getBuildTime().contains(query))
                                     result.add(query_list.get(i).getContent());
                         }
-                        //接下来使用语音模块进行播报
+                        for(int j=0;j<result.size();j++){
+                            String mem=result.get(j);
+                            textToVoice.submit(mem);
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }else if(Double.parseDouble(nlp.sameScore(DELETE,list.get(i)))>0.5){
                         Log.d("testMem",saying);
                         Memorandum.getDatabase();

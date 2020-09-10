@@ -25,16 +25,14 @@ public class Weather {
     public static final String TAG="weather";
     private static final String username="HE2004041333451062";
     private static final String appkey="840b077e05474d5481b3464354cd1075";
-    public Weather(){
+    private TextToVoice textToVoice;
+    public Weather(TextToVoice textToVoice){
         HeConfig.init(username,appkey);
         HeConfig.switchToFreeServerNode();//使用免费节点
+        this.textToVoice=textToVoice;
     }
-
-    /**
-     * 测试使用时返回到Logcat中，返回生活指数
-     * @param context
-     */
     public void getLifeStyle(Context context,String city){
+        String weather=null;
         HeWeather.getWeatherLifeStyle(context,city, Lang.CHINESE_SIMPLIFIED, Unit.METRIC,new HeWeather.OnResultWeatherLifeStyleBeanListener(){
             @Override
             public void onError(Throwable throwable) {
@@ -44,13 +42,14 @@ public class Weather {
             @Override
             public void onSuccess(Lifestyle lifestyle) {
                 Log.i(TAG, " Weather Now onSuccess: " + new Gson().toJson(lifestyle));
-
                 //先判断返回的status是否正确，当status正确时获取数据，若status不正确，可查看status对应的Code值找到原因
                 if ( Code.OK.getCode().equalsIgnoreCase(lifestyle.getStatus()) ){
                     //此时返回数据
                     List<LifestyleBase> list=lifestyle.getLifestyle();
                     list.get(0).getType();
                     Log.d("weather",list.get(0).getTxt());
+                    String weather=list.get(0).getTxt();
+                    textToVoice.submit(weather);
                 } else {
                     //在此查看返回数据失败的原因
                     String status = lifestyle.getStatus();

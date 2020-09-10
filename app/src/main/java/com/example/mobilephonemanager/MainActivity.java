@@ -99,12 +99,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         else{
             if(judgement.equals(Judge.Memorandum)){
-                MemorandumHelper memorandumHelper=new MemorandumHelper();
+                MemorandumHelper memorandumHelper=new MemorandumHelper(textToVoice);
                 memorandumHelper.process(requirement);
             }
             if(judgement.equals(Judge.Weather)){
-                Weather weather=new Weather();
-                //开启天气功能
+                WeatherHelper weatherHelper=new WeatherHelper(this,textToVoice);
+                String city=weatherHelper.getCity(requirement);
+                weatherHelper.process(city);
             }
             if(judgement.equals(Judge.QQ)){
                 String people= QHelper.getPeople(requirement);
