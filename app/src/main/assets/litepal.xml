@@ -5,5 +5,7 @@
     <list>
         <mapping class="com.example.mobilephonemanager.MemorandumData"></mapping>
         <mapping class="com.example.mobilephonemanager.TakeOutFood"></mapping>
+        <mapping class="com.example.mobilephonemanager.App"></mapping>
+        <mapping class="com.example.mobilephonemanager.AppTotal"></mapping>
     </list>
 </litepal>

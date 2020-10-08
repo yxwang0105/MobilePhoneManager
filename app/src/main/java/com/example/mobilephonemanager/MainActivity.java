@@ -29,6 +29,8 @@ import com.baidu.speech.asr.SpeechConstant;
 
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
+import org.litepal.LitePal;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -187,6 +189,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+    public void printFreq(){
+
+    }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -212,6 +217,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 initAccess();
                 Toast.makeText(this, "进入无障碍服务的修改", Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.freq:
+                printFreq();
+                Toast.makeText(this, "显示app使用频率", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.database:
+                LitePal.getDatabase();
+                Toast.makeText(this, "创建数据库成功", Toast.LENGTH_SHORT).show();
             default:
                 break;
         }
@@ -227,6 +239,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         myRecognizer.release();
         Intent intent=new Intent(MainActivity.this,WakeUpService.class);
         bindService(intent,connection,BIND_AUTO_CREATE);
+        Log.d("testWakeUp","now binding");
         super.onStop();
     }
 
@@ -241,7 +254,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             unbindService(connection);
             initMyRecognizer();
             isFirstResuming=false;
+            Log.d("testWakeUp","first come in resume");
         }
+        else
+            Log.d("testWakeUp","not first come in resume");
         super.onResume();
     }
 

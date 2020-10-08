@@ -4,5 +4,16 @@
         android:id="@+id/acc"
         android:icon="@drawable/ic_launcher_foreground"
         android:title="无障碍服务"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/freq"
+        android:icon="@drawable/ic_launcher_foreground"
+        android:title="app使用频率"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/database"
+        android:icon="@drawable/ic_launcher_foreground"
+        android:title="创建数据库"
+        app:showAsAction="never"
+        />
 </menu>
