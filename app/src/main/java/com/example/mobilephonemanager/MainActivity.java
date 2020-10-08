@@ -103,21 +103,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         else{
             if(judgement.equals(Judge.Memorandum)){
+                DataBaseUtils.addAppItems("内嵌备忘录");
                 MemorandumHelper memorandumHelper=new MemorandumHelper(textToVoice);
                 memorandumHelper.process(requirement);
             }
             if(judgement.equals(Judge.Weather)){
+                DataBaseUtils.addAppItems("内嵌天气");
                 WeatherHelper weatherHelper=new WeatherHelper(this,textToVoice);
                 String city=weatherHelper.getCity(requirement);
                 weatherHelper.process(city);
+                DataBaseUtils.addAppItems("");
             }
             if(judgement.equals(Judge.QQ)){
+                DataBaseUtils.addAppItems("QQ");
                 String people= QHelper.getPeople(requirement);
                 String content=QHelper.getContent(requirement);
                 AccessService.QQ_saying=content;
                 QHelper.openQQ(MainActivity.this,1,people);
             }
             if(judgement.equals(Judge.WeChat)){
+                DataBaseUtils.addAppItems("微信");
                 String people=QHelper.getPeople(requirement);
                 String content=QHelper.getContent(requirement);
                 AccessService.WeChat_people=people;
@@ -128,10 +133,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             if(judgement.equals(Judge.ELE)){
                 if(ELE_RANDOM=true) {
+                    DataBaseUtils.addAppItems("饿了吗");
                     ELE_RANDOM=false;
                     randomSelect();
                 }
                 else {
+                    DataBaseUtils.addAppItems("饿了吗");
                     String key = EleHelper.getKey(requirement);
                     AccessService.ELE_saying = key;
                     List<String> list = new ArrayList<>();
@@ -167,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             PackageManager packageManager = getPackageManager();
             Intent intent =packageManager.getLaunchIntentForPackage(AppName.maps.get(name));
             startActivity(intent);
+            DataBaseUtils.addAppItems(name);
         }
     }
     public void randomSelect(){
@@ -190,7 +198,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
     public void printFreq(){
-
+        Intent intent=new Intent(MainActivity.this,FreqActivity.class);
+        startActivity(intent);
     }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

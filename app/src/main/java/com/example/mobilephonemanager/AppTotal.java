@@ -1,6 +1,10 @@
 package com.example.mobilephonemanager;
 
-public class AppTotal {
+import androidx.annotation.Nullable;
+
+import org.litepal.crud.LitePalSupport;
+
+public class AppTotal extends LitePalSupport {
     private int id;
     private String name;
     private int times;
@@ -12,5 +16,22 @@ public class AppTotal {
     }
     public int getTimes(){
         return times;
+    }
+    public void setId(int id){
+        this.id=id;
+    }
+    public void setName(String name){
+        this.name=name;
+    }
+    public void setTimes(int times){
+        this.times=times;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(this==obj) return true;
+        if(!(obj instanceof AppTotal)) return false;
+        AppTotal appTotal=(AppTotal)obj;
+        return this.name.equals(appTotal);
     }
 }
