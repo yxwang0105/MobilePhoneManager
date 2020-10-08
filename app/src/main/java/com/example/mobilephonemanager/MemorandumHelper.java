@@ -122,8 +122,8 @@ public class MemorandumHelper {
                         Log.d("testMem",saying);
                         Memorandum.getDatabase();
                         int mode=MemorandumAdapter.getDeleteMode(saying);
-                        if(mode==0)
-                          LitePal.deleteAll(MemorandumData.class,null);
+                        if(mode==0){}
+//                          LitePal.deleteAll(MemorandumData.class,null);
                         else if(mode==1) {
                             String[] data=MemorandumAdapter.getDeleteModeOne(saying);
                             LitePal.deleteAll(MemorandumData.class,"buildTime=? and content=?",data[0],data[1]);

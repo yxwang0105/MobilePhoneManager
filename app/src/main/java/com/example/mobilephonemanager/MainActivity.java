@@ -14,6 +14,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -192,13 +194,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         initPermission();
         initMyRecognizer();
-        initAccess();
         isFirstResuming=true;
         nlp=new NLP();
         new ConnectThread().start();
         this.textToVoice=new TextToVoice(this);
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.acc:
+                initAccess();
+                Toast.makeText(this, "进入无障碍服务的修改", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
     @Override
     protected void onPause() {
         super.onPause();
