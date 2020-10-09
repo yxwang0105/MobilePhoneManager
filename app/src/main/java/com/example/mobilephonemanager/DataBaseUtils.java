@@ -1,8 +1,10 @@
 package com.example.mobilephonemanager;
 
 import org.litepal.LitePal;
+import org.litepal.crud.LitePalSupport;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,5 +37,31 @@ public class DataBaseUtils {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String time=formatter.format(date);
         return time;
+    }
+    public static List<AppItem> getTotalInfo(){
+        List<AppItem> list=new ArrayList<>();
+        List<AppTotal> allTotalApps = LitePal.findAll(AppTotal.class);
+        if(allTotalApps.size()==0)
+            return null;
+        for(int i=0;i<allTotalApps.size();i++){
+            AppItem appItem=new AppItem();
+            appItem.setName(allTotalApps.get(i).getName());
+            appItem.setTimes(allTotalApps.get(i).getTimes());
+            list.add(appItem);
+        }
+        return list;
+    }
+    public static List<AppItem> getComprehensiveInfo(String name){
+        List<AppItem> list=new ArrayList<>();
+        List<App> apps=LitePal.findAll(App.class);
+        if(apps.size()==0)
+            return null;
+        for(int i=0;i<apps.size();i++){
+            AppItem appItem=new AppItem();
+            appItem.setName(apps.get(i).getName());
+            appItem.setTime(apps.get(i).getTime());
+            list.add(appItem);
+        }
+        return list;
     }
 }

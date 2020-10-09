@@ -200,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void printFreq(){
         Intent intent=new Intent(MainActivity.this,FreqActivity.class);
         startActivity(intent);
+        Log.d("testFreq","ready to open FreqActivity");
     }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
