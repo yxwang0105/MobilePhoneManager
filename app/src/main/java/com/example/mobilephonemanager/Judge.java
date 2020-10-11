@@ -8,10 +8,10 @@ import java.util.List;
  */
 public class Judge {
     private static List<String> param=new LinkedList<>();
-    public static final String Memorandum="00",Weather="01",QQ="10",WeChat="11",ELE="100";
+    public static final String Memorandum="00",Weather="011",QQ="10",WeChat="11",ELE="100",DIAL="101",SMS="110";
     static{
         param.add("备忘录应用");
-        param.add("天气应用");
+        param.add("天气");
     }
     public static String judge(String data){
         String judgement="";
@@ -30,6 +30,12 @@ public class Judge {
             judgement+="00";
             if(data.contains("点一份外卖"))
                 MainActivity.ELE_RANDOM=true;
+        }
+        if(data.contains("电话")){
+            judgement+="01";
+        }
+        if(data.contains("短信")){
+            judgement+="10";
         }
         return judgement;
 

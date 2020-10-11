@@ -57,10 +57,12 @@ public class DataBaseUtils {
         if(apps.size()==0)
             return null;
         for(int i=0;i<apps.size();i++){
-            AppItem appItem=new AppItem();
-            appItem.setName(apps.get(i).getName());
-            appItem.setTime(apps.get(i).getTime());
-            list.add(appItem);
+            if(apps.get(i).getName().equals(name)) {
+                AppItem appItem = new AppItem();
+                appItem.setName(apps.get(i).getName());
+                appItem.setTime(apps.get(i).getTime());
+                list.add(appItem);
+            }
         }
         return list;
     }

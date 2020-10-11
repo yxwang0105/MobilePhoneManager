@@ -38,6 +38,7 @@ public class FreqActivity extends AppCompatActivity {
                 if(appItems==null||appItems.size()==0)
                     return;
                 Toast.makeText(FreqActivity.this, "正在为您显示"+name+"的最近使用时间", Toast.LENGTH_SHORT).show();
+                Log.d("testComprehensiveFreq","ready to enter ComprehensiveFreqActivity");
                 Intent intent=new Intent(FreqActivity.this,ComprehensiveFreqActivity.class);
                 intent.putExtra("name",name);
                 startActivity(intent);

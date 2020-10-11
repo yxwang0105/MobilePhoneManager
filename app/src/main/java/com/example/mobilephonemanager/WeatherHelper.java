@@ -25,7 +25,7 @@ public class WeatherHelper {
     public String getCity(String message){
         int loc1=message.indexOf("查询");
         int loc2=message.indexOf("的天气");
-        String city=message.substring(loc1,loc2);
+        String city=message.substring(loc1+2,loc2);
         return city;
     }
 }

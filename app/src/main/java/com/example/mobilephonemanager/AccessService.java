@@ -1,5 +1,6 @@
 package com.example.mobilephonemanager;
 import android.accessibilityservice.AccessibilityService;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
@@ -52,7 +53,7 @@ public class AccessService extends AccessibilityService {
         switch (eventType) {
             case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
                 if ("com.tencent.mobileqq".equals(event.getPackageName())) {
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                         AccessibilityNodeInfo QQNodeInfo = mAccservice.getRootInActiveWindow();
                         List<AccessibilityNodeInfo> textInfoList = QQNodeInfo.findAccessibilityNodeInfosByViewId("com.tencent.mobileqq:id/input");
                         List<AccessibilityNodeInfo> buttonInfoList = QQNodeInfo.findAccessibilityNodeInfosByText("发送");
@@ -67,7 +68,7 @@ public class AccessService extends AccessibilityService {
                     }
                 }
                 if ("om.tencent.mm".equals(event.getPackageName())) {
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                         WechatUtils.findTextAndClick(mAccservice, "通讯录");
                         WechatUtils.findTextAndClick(mAccservice, WeChat_people);
                         WechatUtils.findTextAndClick(mAccservice, "发消息");
@@ -85,8 +86,10 @@ public class AccessService extends AccessibilityService {
                     }
                 }
                 if ("me.ele".equals(event.getPackageName())) {
-                    if (WechatUtils.findViewIdAndClick(mAccservice, "me.ele:id/aex")) {
+                    Log.d("testEle","正在进行选择");
+                    if (WechatUtils.findViewIdAndClick(mAccservice, "me.ele:id/asb")) {
                         try {
+                            Log.d("testEle","正在点击");
                             Thread.sleep(5000);
                             WechatUtils.findViewIdAndClick(mAccservice, "me.ele:id/aex");
                             Thread.sleep(5000);
@@ -111,11 +114,21 @@ public class AccessService extends AccessibilityService {
                         }
                     }
                 }
+               /** if ("me.ele".equals(event.getPackageName())){
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    AccessibilityNodeInfo eleNodeInfo = mAccservice.getRootInActiveWindow();
+                    List<AccessibilityNodeInfo> list= null;
+                    list=eleNodeInfo.findAccessibilityNodeInfosByText("外婆私房菜 首次光顾减1");
+                    Log.d("testEle",list.get(0).getParent().toString());
+                }**/
             case AccessibilityEvent.TYPE_VIEW_CLICKED:
                 String source = event.getPackageName() + "";
                 String text = event.getText() + "";
                 String store="";
-                Log.d("ssssaaaa",source);
                 if(source.equals("me.ele")&&text.contains(ELE_saying)&&text.contains("km")&&text.contains("更多")){
                     String store1=text.split(",")[0].substring(1);
                     String store2=text.split(",")[1].substring(1);

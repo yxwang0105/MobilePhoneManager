@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void handleMsg(final Message message){
         final String requirement=message.obj.toString();
+        Log.d("testEle",requirement);
         String judgement=Judge.judge(requirement);
         if(judgement.equals("1")) {
             Iterator iter = specialHashName.maps.entrySet().iterator();
@@ -108,11 +109,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 memorandumHelper.process(requirement);
             }
             if(judgement.equals(Judge.Weather)){
+                Log.d("testEle",judgement);
                 DataBaseUtils.addAppItems("内嵌天气");
                 WeatherHelper weatherHelper=new WeatherHelper(this,textToVoice);
                 String city=weatherHelper.getCity(requirement);
+                Log.d("testWeather","all ready to open weather"+" "+city);
                 weatherHelper.process(city);
-                DataBaseUtils.addAppItems("");
             }
             if(judgement.equals(Judge.QQ)){
                 DataBaseUtils.addAppItems("QQ");
@@ -132,12 +134,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 openActivity(list);
             }
             if(judgement.equals(Judge.ELE)){
-                if(ELE_RANDOM=true) {
+                Log.d("testEle",ELE_RANDOM+"");
+                if(ELE_RANDOM) {
                     DataBaseUtils.addAppItems("饿了吗");
                     ELE_RANDOM=false;
                     randomSelect();
                 }
-                else {
+                if(!ELE_RANDOM){
+                    Log.d("testEle","已进入饿了吗专区");
                     DataBaseUtils.addAppItems("饿了吗");
                     String key = EleHelper.getKey(requirement);
                     AccessService.ELE_saying = key;
@@ -145,6 +149,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     list.add("饿了吗");
                     openActivity(list);
                 }
+            }
+            if(judgement.equals(Judge.DIAL)){
+                DataBaseUtils.addAppItems("电话");
+                String name=PhoneHelper.getPeopleTele(requirement);
+                Phone.callPhoneThroughContacts(name,MainActivity.this);
+            }
+            if(judgement.equals(Judge.SMS)){
+                DataBaseUtils.addAppItems("短信");
+                String name=PhoneHelper.getPeopleSMS(requirement);
+                String content=PhoneHelper.getContent(requirement);
+                Phone.sendSMS(name,content,MainActivity.this);
             }
         }
     }
@@ -350,7 +365,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.ACCESS_NETWORK_STATE,
                 Manifest.permission.INTERNET,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CALL_PHONE,
+                Manifest.permission.READ_CONTACTS,
+                Manifest.permission.SEND_SMS
         };
         ArrayList<String> toApplyList = new ArrayList<String>();
         for (String perm : permissions) {
@@ -395,8 +413,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // BluetoothUtil.start(this,BluetoothUtil.FULL_MODE); // 蓝牙耳机开始，注意一部分手机这段代码无效
     }
-    private void callActivity() {
-            this.textToVoice.submit("弱啊，巫乐文");
+    private void callActivity(){
+        Message message=new Message();
+        message.obj = "给巫乐文打电话";
+        handleMsg(message);
+        //Phone.callPhoneJump("15751763556",MainActivity.this);
+        //ArrayList<MyContacts> list=Phone.getAllContacts(MainActivity.this);
+        //Log.d("testWeather",list.toString());
+        //Phone.callPhoneThroughContacts("巫乐文",MainActivity.this);
+        //Phone.sendSMS("巫乐文","弱啊，巫乐文",MainActivity.this);
+
     }
 
     class ConnectThread extends Thread{

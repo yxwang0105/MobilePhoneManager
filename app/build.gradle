@@ -33,6 +33,7 @@ dependencies {
     implementation files('libs/slf4j-api-1.7.25.jar')
     implementation files('libs/slf4j-simple-1.7.25.jar')
     implementation files('libs/HeWeather_Public_Android_V3.3.jar')
+    implementation files('libs/pinyin4j-2.5.0.jar')
     implementation 'com.google.okhttp:okhttp:20120626'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.squareup.okhttp3:okhttp:4.5.0-RC1'

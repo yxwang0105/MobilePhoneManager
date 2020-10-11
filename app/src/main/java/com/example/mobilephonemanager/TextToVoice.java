@@ -16,8 +16,8 @@ public class TextToVoice implements TextToSpeech.OnInitListener {
     }
     private void initTextToSpeech() {
         mTextToSpeech = new TextToSpeech(context, this);
-        mTextToSpeech.setPitch(1.0f);
-        mTextToSpeech.setSpeechRate(0.5f);
+        mTextToSpeech.setPitch(0.8f);
+        mTextToSpeech.setSpeechRate(1.0f);
     }
 
     @Override
