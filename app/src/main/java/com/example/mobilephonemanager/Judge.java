@@ -8,9 +8,9 @@ import java.util.List;
  */
 public class Judge {
     private static List<String> param=new LinkedList<>();
-    public static final String Memorandum="00",Weather="011",QQ="10",WeChat="11",ELE="100",DIAL="101",SMS="110";
+    public static final String Memorandum="001",Weather="011",QQ="10",WeChat="11",ELE="100",DIAL="101",SMS="110";
     static{
-        param.add("备忘录应用");
+        param.add("备忘录");
         param.add("天气");
     }
     public static String judge(String data){

@@ -69,20 +69,23 @@ public class MemorandumHelper {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.d("testMem",saying);
                 if(saying==null||"".equals(saying))
                     return;
                 NLP nlp=new NLP();
+                Log.d("testMem","nlp is done");
                 JSONObject jsonObject=nlp.getJSONObject(saying);
                 List<String> list=nlp.getDeprel(saying,"HED");
+                Log.d("testMem",list.toString());
                 for(int i=0;i<list.size();i++){
                     if(Double.parseDouble(nlp.sameScore(SAVE,list.get(i)))>0.5){
+                        Log.d("testMem","save");
                         String save=MemorandumAdapter.getSaveContent(saying);
-                        Memorandum.getDatabase();
+                        Log.d("testMem",save);
                         SimpleDateFormat formatter=new SimpleDateFormat   ("yyyy年MM月dd日");
                         Date curDate =  new Date(System.currentTimeMillis());
                         String str = formatter.format(curDate);
                         Memorandum.add(str,save);
+                        Log.d("testMem",str);
                     }else if(Double.parseDouble(nlp.sameScore(QUERY,list.get(i)))>0.5){
                         String q1=MemorandumAdapter.getQueryDataModeOne(saying);
                         String q2=MemorandumAdapter.getQueryDataModeTwo(saying);
@@ -90,14 +93,17 @@ public class MemorandumHelper {
                         boolean flag=false;
                         if(q1==null&&q2==null)
                             return;
-                        if(q1==null)
-                            query=q2;
+                        if(q1==null) {
+                            query = q2;
+                            Log.d("testMem","q2");
+                        }
                         else {
                             query = q1;
+                            Log.d("testMem","q1");
                             flag=true;
                         }
-                        Memorandum.getDatabase();
                         List<MemorandumData> query_list=Memorandum.findAll();
+                        Log.d("testMem",query_list.toString());
                         List<String> result=new LinkedList<>();
                         if(flag==true){
                             for(int j=0;j<query_list.size();j++)
@@ -108,6 +114,7 @@ public class MemorandumHelper {
                             for(int j=0;j<query_list.size();j++)
                                 if(query_list.get(i).getBuildTime().contains(query))
                                     result.add(query_list.get(i).getContent());
+                                Log.d("testMem",result.toString());
                         }
                         for(int j=0;j<result.size();j++){
                             String mem=result.get(j);
@@ -122,8 +129,9 @@ public class MemorandumHelper {
                         Log.d("testMem",saying);
                         Memorandum.getDatabase();
                         int mode=MemorandumAdapter.getDeleteMode(saying);
-                        if(mode==0){}
-//                          LitePal.deleteAll(MemorandumData.class,null);
+                        if(mode==0) {
+                            LitePal.deleteAll(MemorandumData.class, null);
+                        }
                         else if(mode==1) {
                             String[] data=MemorandumAdapter.getDeleteModeOne(saying);
                             LitePal.deleteAll(MemorandumData.class,"buildTime=? and content=?",data[0],data[1]);
@@ -139,7 +147,8 @@ public class MemorandumHelper {
                         else
                             return;
                     }
-
+                        else
+                            return;
                 }
             }
         }).start();

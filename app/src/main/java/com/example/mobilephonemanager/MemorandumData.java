@@ -30,4 +30,13 @@ public class MemorandumData extends LitePalSupport {
     public void setId(int id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "MemorandumData{" +
+                "id=" + id +
+                ", buildTime='" + buildTime + '\'' +
+                ", content='" + content + '\'' +
+                '}';
+    }
 }

@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void handleMsg(final Message message){
         final String requirement=message.obj.toString();
-        Log.d("testEle",requirement);
         String judgement=Judge.judge(requirement);
         if(judgement.equals("1")) {
             Iterator iter = specialHashName.maps.entrySet().iterator();
@@ -415,7 +414,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     private void callActivity(){
         Message message=new Message();
-        message.obj = "给巫乐文打电话";
+        message.obj = "用备忘录查询日期为2020年10月12日的内容";
         handleMsg(message);
         //Phone.callPhoneJump("15751763556",MainActivity.this);
         //ArrayList<MyContacts> list=Phone.getAllContacts(MainActivity.this);

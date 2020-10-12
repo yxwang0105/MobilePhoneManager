@@ -4,6 +4,10 @@ import android.util.Log;
 
 import java.util.List;
 
+/**
+ *用备忘录记录。。。
+ *
+ */
 public class MemorandumAdapter {
     /**
      * 根据分析，想要得到保存内容一共就两种情况，要么就是中心词加补足语，要么就是只有中心词
@@ -12,67 +16,22 @@ public class MemorandumAdapter {
      * @return
      */
     public static String getSaveContent(String data){
-      String save1=getSaveContentFromModeOne(data);
-      String save2=getSaveContentFromModeTwo(data);
-      if(save1==null)
-          return save2;
-      else
-          return save1;
+        int index=data.indexOf("记录")+2;
+        Log.d("testMem",index+"");
+        return data.substring(index);
     }
 
-    /**
-     * 分析中心词加补足语CMP的情况，但是这里也有一个问题就是在保存文本中若是有补足语就会有问题
-     * 所以只有一种情况才会满足要求，就是补足语距离中心词不可以很远，且补足语取第一个
-     * @param data
-     * @return
-     */
-    public static String getSaveContentFromModeOne(String data){
-        NLP nlp=new NLP();
-        List<String> list=nlp.getDeprel(data,"HED");
-        String hed=list.get(0);//一般来说第一个就是我们需要找的词
-        if(hed==null)
-            return null;
-        list=nlp.getDeprel(data,"CMP");
-        String cmp=list.get(0);
-        if(cmp==null)
-            return null;
-        int hedPosition=data.indexOf(hed);
-        int cmpPosition=data.indexOf(cmp,hedPosition);//补足语必须在它后面
-        if(cmpPosition==-1||cmpPosition-hedPosition>3)
-            return null;
-        else {
-            return data.substring(cmpPosition+1);
-        }
-    }
-
-    /**
-     * 这个就是Mode1的阉割版，直接取中心词之后的子串就可以
-     * @param data
-     * @return
-     */
-    public static String getSaveContentFromModeTwo(String data){
-        NLP nlp=new NLP();
-        List<String> list=nlp.getDeprel("data","HED");
-        String hed=list.get(0);
-        if(hed==null)
-            return null;
-        int hed_position=data.indexOf(hed);
-        int size=hed.length();
-        if(hed_position==-1)
-            return null;
-        else
-            return data.substring(hed_position+size);
-    }
     public static String getQueryDataModeOne(String data){
-        int loc1=data.indexOf("有关于");
+        int loc1=data.indexOf("有关于")+3;
         int loc2=data.indexOf("的内容");
-        if(loc1==-1||loc2==-1)
+        Log.d("testMem",loc1+" "+loc2);
+        if(loc1==2||loc2==-1)
             return null;
         String data1=data.substring(loc1,loc2);
         return data1;
     }
     public static String getQueryDataModeTwo(String data){
-        int loc1=data.indexOf("日期为");
+        int loc1=data.indexOf("日期为")+3;
         int loc2=data.indexOf("的内容");
         if(loc1==-1||loc2==-1)
             return null;

@@ -17,10 +17,12 @@ public class Memorandum {
     public static void add(String buildTime,String content){
         if(buildTime==null||content==null)
             return;
+        Log.d("testMem","mem is doing");
         MemorandumData data=new MemorandumData();
         data.setBuildTime(buildTime);
         data.setContent(content);
         data.save();
+        Log.d("testMem","mem is done");
     }
     public static void delete(long id){
         LitePal.delete(MemorandumData.class,id);
