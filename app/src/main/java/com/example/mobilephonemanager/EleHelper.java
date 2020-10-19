@@ -1,6 +1,5 @@
 package com.example.mobilephonemanager;
 
-import android.content.Intent;
 import android.util.Log;
 import org.litepal.LitePal;
 import java.text.SimpleDateFormat;
@@ -66,15 +65,19 @@ public class EleHelper {
         Map<String,Integer> storeMap=new HashMap<>();
         for(int i=0;i<storeList.size();i++){
             if(storeMap.containsKey(storeList.get(i).getStore()))
-                storeMap.put(storeList.get(i).getStore(),storeMap.get(storeList.get(i))+1);
+                storeMap.put(storeList.get(i).getStore(), storeMap.get(storeList.get(i).getStore()) + 1);
             else
-                storeMap.put(storeList.get(i).getStore(),1);
+                storeMap.put(storeList.get(i).getStore(), 1);
         }
         Set<String> storeSet=storeMap.keySet();
         if(storeSet.size()==0)
             return null;
         else{
-            String[] storeArray=(String[]) storeSet.toArray();
+            Object[] temp=storeSet.toArray();
+            String[] storeArray=new String[temp.length];
+            for(int i=0;i<storeArray.length;i++){
+                storeArray[i]=(String)temp[i];
+            }
             int max=0;
             for(int i=0;i<storeArray.length-1;i++){
                 if(storeMap.get(storeArray[i+1])>=storeMap.get(storeArray[i]))

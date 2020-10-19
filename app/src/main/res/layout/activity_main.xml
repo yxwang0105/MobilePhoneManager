@@ -5,25 +5,44 @@
     android:layout_height="wrap_content"
     android:background="@mipmap/main_picture">
     <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="400dp">
-        <TextView
-        android:id="@+id/requirment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="400dp">
+        <AutoCompleteTextView
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:dropDownHeight="200dip"
+            android:id="@+id/requirment"
+            android:enabled="false"
+            android:textColor="@color/red"/>
+
     </ScrollView>
     <Button
         android:id="@+id/start"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:text="Start"
+        android:background="@drawable/start_selector"
+        android:layout_gravity="center_horizontal"
+        android:textAllCaps="false" />
+    <Button
+        android:id="@+id/stop"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="Stop"
+        android:background="@drawable/start_selector"
+        android:layout_gravity="center_horizontal"
+        android:textAllCaps="false"/>
+    <Button
+        android:id="@+id/cancel"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
         android:background="@drawable/start_selector"
         android:layout_gravity="center_horizontal"
         android:textAllCaps="false"/>
     <Button
         android:id="@+id/test"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test"
-        android:textAllCaps="false"/>
+        android:text="test"/>
 </LinearLayout>

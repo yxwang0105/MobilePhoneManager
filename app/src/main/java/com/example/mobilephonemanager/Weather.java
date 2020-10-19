@@ -31,7 +31,7 @@ public class Weather {
         HeConfig.switchToFreeServerNode();//使用免费节点
         this.textToVoice=textToVoice;
     }
-    public void getLifeStyle(Context context,String city){
+    public void getWeather(final Context context, String city){
         String weather=null;
         HeWeather.getWeatherLifeStyle(context,city, Lang.CHINESE_SIMPLIFIED, Unit.METRIC,new HeWeather.OnResultWeatherLifeStyleBeanListener(){
             @Override
@@ -47,9 +47,12 @@ public class Weather {
                     //此时返回数据
                     List<LifestyleBase> list=lifestyle.getLifestyle();
                     list.get(0).getType();
-                    Log.d("weather",list.get(0).getTxt());
-                    String weather=list.get(0).getTxt();
-                    textToVoice.submit(weather);
+                    Log.d("weather",list.toString()+list.size());
+                    String result="";
+                    for(int i=0;i<list.size();i++) {
+                        result+=list.get(i).getTxt();
+                    }
+                    textToVoice.submit(result);
                 } else {
                     //在此查看返回数据失败的原因
                     String status = lifestyle.getStatus();
@@ -61,4 +64,5 @@ public class Weather {
 
 
     }
+
 }

@@ -19,7 +19,9 @@ public class TextToVoice implements TextToSpeech.OnInitListener {
         mTextToSpeech.setPitch(0.8f);
         mTextToSpeech.setSpeechRate(1.0f);
     }
-
+    public void stop(){
+        mTextToSpeech.stop();
+    }
     @Override
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {

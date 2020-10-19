@@ -1,22 +1,13 @@
 package com.example.mobilephonemanager;
 
 import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.json.JSONObject;
 import org.litepal.LitePal;
-import org.litepal.crud.LitePalSupport;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * 工作流程
@@ -74,8 +65,14 @@ public class MemorandumHelper {
                 NLP nlp=new NLP();
                 Log.d("testMem","nlp is done");
                 JSONObject jsonObject=nlp.getJSONObject(saying);
-                List<String> list=nlp.getDeprel(saying,"HED");
-                Log.d("testMem",list.toString());
+                List<String> list=new ArrayList<>();
+                if(saying.substring(0,6).equals("用备忘录记录"))
+                    list.add("记录");
+                if(saying.substring(0,6).equals("用备忘录查询"))
+                    list.add("查询");
+                if(saying.substring(0,6).equals("用备忘录删除"))
+                    list.add("删除");
+                Log.d("testMem",list.toString()+"  "+saying.substring(0,5));
                 for(int i=0;i<list.size();i++){
                     if(Double.parseDouble(nlp.sameScore(SAVE,list.get(i)))>0.5){
                         Log.d("testMem","save");
@@ -130,7 +127,7 @@ public class MemorandumHelper {
                         Memorandum.getDatabase();
                         int mode=MemorandumAdapter.getDeleteMode(saying);
                         if(mode==0) {
-                            LitePal.deleteAll(MemorandumData.class, null);
+                            LitePal.deleteAll(MemorandumData.class,"id > ?","0");
                         }
                         else if(mode==1) {
                             String[] data=MemorandumAdapter.getDeleteModeOne(saying);

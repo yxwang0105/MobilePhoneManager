@@ -1,6 +1,7 @@
 package com.example.mobilephonemanager;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +22,14 @@ public class FreqAdapter extends RecyclerView.Adapter<FreqAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull final FreqAdapter.ViewHolder holder, final int position) {
         AppItem app=mAppList.get(position);
-        holder.appInfo.setText(app.getName()+"    "+app.getTimes()+"次");
+        holder.appInfo.setText(app.getName()+"共使用"+app.getTimes()+"次");
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 listener.onClick(position);
             }
         });
+        holder.itemView.setBackgroundColor(Color.WHITE);
     }
 
     @Override

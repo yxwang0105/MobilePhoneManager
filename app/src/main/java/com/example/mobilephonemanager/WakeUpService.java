@@ -30,11 +30,16 @@ public class WakeUpService extends Service {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            Intent intent=new Intent(WakeUpService.this,MainActivity.class);
-            intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-            Log.d(TAG,"is handle");
+           // Intent intent=new Intent(WakeUpService.this,MainActivity.class);
+            //intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+            //Log.d(TAG,"is handle");
+            //startActivity(intent);
+            //onDestroy();
+            //stopSelf();
+            final Intent intent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
-            onDestroy();
+
             Log.d(TAG,"stop self");
         }
     };
@@ -43,7 +48,7 @@ public class WakeUpService extends Service {
         // 基于DEMO唤醒词集成第2.1, 2.2 发送开始事件开始唤醒
         public void start() {
             Map<String, Object> params = new HashMap<String, Object>();
-            params.put(SpeechConstant.WP_WORDS_FILE, "assets:///WakeUp.bin");
+            params.put(SpeechConstant.WP_WORDS_FILE, "assets:///return.bin");
             // "assets:///WakeUp.bin" 表示WakeUp.bin文件定义在assets目录下
 
             // params.put(SpeechConstant.ACCEPT_AUDIO_DATA,true);

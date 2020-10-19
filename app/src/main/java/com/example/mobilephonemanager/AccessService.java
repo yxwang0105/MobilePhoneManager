@@ -26,6 +26,7 @@ public class AccessService extends AccessibilityService {
     public static String WeChat_saying;
     public static String WeChat_people;
     public static String ELE_saying;
+    public static String ELE_saying_click;
     public static boolean random;
     public static boolean isStart() {
         return mAccservice != null;
@@ -35,103 +36,114 @@ public class AccessService extends AccessibilityService {
     protected void onServiceConnected() {
         super.onServiceConnected();
         mAccservice = this;
+        Log.d("testELE","已经连接");
     }
 
     @Override
     public void onDestroy() {
+        Log.d("testELE","is destory");
         super.onDestroy();
     }
 
     @Override
     public void onInterrupt() {
-
+        Log.d("testELE","is interrupt");
     }
-
+    public void clear(){
+        QQ_saying=null;
+        WeChat_saying=null;
+        WeChat_people=null;
+        ELE_saying=null;
+        random=false;
+    }
+    public boolean isselected(){
+        Log.d("testELE","正在判断");
+        if(QQ_saying==null&&WeChat_people==null&&WeChat_people==null&&ELE_saying==null&&ELE_saying_click==null)
+            return false;
+        return true;
+    }
     @Override
     public void onAccessibilityEvent(final AccessibilityEvent event) {
+        if(!isselected()) {
+            return;
+        }
         int eventType = event.getEventType();
         switch (eventType) {
             case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
-                if ("com.tencent.mobileqq".equals(event.getPackageName())) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        AccessibilityNodeInfo QQNodeInfo = mAccservice.getRootInActiveWindow();
-                        List<AccessibilityNodeInfo> textInfoList = QQNodeInfo.findAccessibilityNodeInfosByViewId("com.tencent.mobileqq:id/input");
-                        List<AccessibilityNodeInfo> buttonInfoList = QQNodeInfo.findAccessibilityNodeInfosByText("发送");
-                        if (textInfoList.size() != 0 && buttonInfoList.size() != 0) {
-                            AccessibilityNodeInfo textInfo = textInfoList.get(0);
-                            Bundle arguments = new Bundle();
-                            arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, QQ_saying);
-                            textInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
-                            AccessibilityNodeInfo buttonInfo = buttonInfoList.get(0);
-                            buttonInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                        }
-                    }
-                }
-                if ("om.tencent.mm".equals(event.getPackageName())) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        WechatUtils.findTextAndClick(mAccservice, "通讯录");
-                        WechatUtils.findTextAndClick(mAccservice, WeChat_people);
-                        WechatUtils.findTextAndClick(mAccservice, "发消息");
-                        AccessibilityNodeInfo WeChatNodeInfo = mAccservice.getRootInActiveWindow();
-                        List<AccessibilityNodeInfo> textList = WeChatNodeInfo.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/ajs");
-                        List<AccessibilityNodeInfo> buttonList = WeChatNodeInfo.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/amb");
-                        if (textList.size() != 0 && buttonList.size() != 0) {
-                            AccessibilityNodeInfo textInfo = textList.get(0);
-                            AccessibilityNodeInfo buttonInfo = buttonList.get(0);
-                            Bundle arguments = new Bundle();
-                            arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, WeChat_saying);
-                            textInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
-                            buttonInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                        }
-                    }
-                }
-                if ("me.ele".equals(event.getPackageName())) {
-                    Log.d("testEle","正在进行选择");
-                    if (WechatUtils.findViewIdAndClick(mAccservice, "me.ele:id/asb")) {
-                        try {
-                            Log.d("testEle","正在点击");
-                            Thread.sleep(5000);
-                            WechatUtils.findViewIdAndClick(mAccservice, "me.ele:id/aex");
-                            Thread.sleep(5000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        AccessibilityNodeInfo eleNodeInfo = mAccservice.getRootInActiveWindow();
-                        List<AccessibilityNodeInfo> editNodeList = null;
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                            editNodeList = eleNodeInfo.findAccessibilityNodeInfosByViewId("me.ele:id/a15");
-                        }
-                        if (editNodeList.size() != 0) {
-                            AccessibilityNodeInfo editInfo = editNodeList.get(0);
-                            Bundle arguments = new Bundle();
-                            arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, ELE_saying);
-                            editInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
-                            WechatUtils.findTextAndClick(mAccservice, "搜索");
-                            if(random=true) {
-                                random=false;
-                                WechatUtils.findTextAndClick(mAccservice, ELE_saying);
+                    if ("com.tencent.mobileqq".equals(event.getPackageName())&&QQ_saying!=null) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                            AccessibilityNodeInfo QQNodeInfo = mAccservice.getRootInActiveWindow();
+                            List<AccessibilityNodeInfo> textInfoList = QQNodeInfo.findAccessibilityNodeInfosByViewId("com.tencent.mobileqq:id/input");
+                            List<AccessibilityNodeInfo> buttonInfoList = QQNodeInfo.findAccessibilityNodeInfosByText("发送");
+                            if (textInfoList.size() != 0 && buttonInfoList.size() != 0) {
+                                AccessibilityNodeInfo textInfo = textInfoList.get(0);
+                                Bundle arguments = new Bundle();
+                                arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, QQ_saying);
+                                textInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+                                AccessibilityNodeInfo buttonInfo = buttonInfoList.get(0);
+                                buttonInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                                clear();
                             }
                         }
                     }
-                }
-               /** if ("me.ele".equals(event.getPackageName())){
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    if ("om.tencent.mm".equals(event.getPackageName())&&WeChat_people!=null&&WeChat_saying!=null) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                            WechatUtils.findTextAndClick(mAccservice, "通讯录");
+                            WechatUtils.findTextAndClick(mAccservice, WeChat_people);
+                            WechatUtils.findTextAndClick(mAccservice, "发消息");
+                            AccessibilityNodeInfo WeChatNodeInfo = mAccservice.getRootInActiveWindow();
+                            List<AccessibilityNodeInfo> textList = WeChatNodeInfo.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/ajs");
+                            List<AccessibilityNodeInfo> buttonList = WeChatNodeInfo.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/amb");
+                            if (textList.size() != 0 && buttonList.size() != 0) {
+                                AccessibilityNodeInfo textInfo = textList.get(0);
+                                AccessibilityNodeInfo buttonInfo = buttonList.get(0);
+                                Bundle arguments = new Bundle();
+                                arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, WeChat_saying);
+                                textInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+                                buttonInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                                clear();
+                            }
+                        }
                     }
-                    AccessibilityNodeInfo eleNodeInfo = mAccservice.getRootInActiveWindow();
-                    List<AccessibilityNodeInfo> list= null;
-                    list=eleNodeInfo.findAccessibilityNodeInfosByText("外婆私房菜 首次光顾减1");
-                    Log.d("testEle",list.get(0).getParent().toString());
-                }**/
+                    if ("me.ele".equals(event.getPackageName())&&ELE_saying!=null) {
+                        if (WechatUtils.findViewIdAndClick(mAccservice, "me.ele:id/asb")) {
+                            AccessibilityNodeInfo eleNodeInfo = mAccservice.getRootInActiveWindow();
+                            List<AccessibilityNodeInfo> editNodeList = null;
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                                editNodeList = eleNodeInfo.findAccessibilityNodeInfosByViewId("me.ele:id/a15");
+                            }
+                            if (editNodeList.size() != 0) {
+                                AccessibilityNodeInfo editInfo = editNodeList.get(0);
+                                Bundle arguments = new Bundle();
+                                arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, ELE_saying);
+                                Log.d("testRandom",ELE_saying+"正在点击");
+                                editInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+                                WechatUtils.findTextAndClick(mAccservice, "搜索");
+                                WechatUtils.findTextAndClick(mAccservice, "搜索");
+                                if (random = true) {
+                                    try {
+                                        Thread.sleep(10000);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    Log.d("testRandom","正在随机选择");
+                                    random = false;
+                                    WechatUtils.findTextAndClick(mAccservice, ELE_saying);
+                                    clear();
+                                }
+                                clear();
+                            }
+                        }
+                    }
             case AccessibilityEvent.TYPE_VIEW_CLICKED:
                 String source = event.getPackageName() + "";
                 String text = event.getText() + "";
                 String store="";
-                if(source.equals("me.ele")&&text.contains(ELE_saying)&&text.contains("km")&&text.contains("更多")){
+                Log.d("testELE",text+"  "+ELE_saying_click);
+                if(source.equals("me.ele")&&ELE_saying_click!=null&&text.contains(ELE_saying_click)&&text.contains("km")){
                     String store1=text.split(",")[0].substring(1);
                     String store2=text.split(",")[1].substring(1);
+                    Log.d("testELE","11");
                     try {
                         int test = Integer.parseInt(store1);
                         store=store2;
@@ -139,18 +151,15 @@ public class AccessService extends AccessibilityService {
                         store=store1;
                     }finally {
                         LitePal.getDatabase();
-                        Log.d("ssssaaaa","get success");
                         Date date = new Date();
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss");
                         String time = formatter.format(date);
-                        Log.d("ssssaaaa","time success");
                         String[] times = time.split("/");
                         int year = Integer.parseInt(times[0]);
                         int month = Integer.parseInt(times[1]);
                         int day = Integer.parseInt(times[2]);
                         int hour = Integer.parseInt(times[3]);
                         int min = Integer.parseInt(times[4]);
-                        Log.d("ssssaaaa","ready");
                         TakeOutFood takeOutFood = new TakeOutFood();
                         takeOutFood.setStore(store);
                         takeOutFood.setYear(year);
@@ -159,7 +168,7 @@ public class AccessService extends AccessibilityService {
                         takeOutFood.setHour(hour);
                         takeOutFood.setMin(min);
                         takeOutFood.save();
-                        Log.d("ssssaaaa", "success");
+                        ELE_saying_click=null;
                     }
                 }
                /* final String[] store = new String[2];

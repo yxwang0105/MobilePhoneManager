@@ -1,6 +1,7 @@
 package com.example.mobilephonemanager;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ public class ComprehensiveFreqAdapter extends RecyclerView.Adapter<Comprehensive
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         AppItem app=mAppList.get(position);
         holder.comprehensive_app_info.setText(app.getName()+"    "+app.getTime());
+        holder.itemView.setBackgroundColor(Color.WHITE);
     }
 
 

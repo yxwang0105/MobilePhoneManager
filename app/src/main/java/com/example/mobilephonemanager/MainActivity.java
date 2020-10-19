@@ -17,6 +17,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +27,7 @@ import com.baidu.aip.asrwakeup3.core.recog.MyRecognizer;
 import com.baidu.aip.asrwakeup3.core.recog.listener.IRecogListener;
 import com.baidu.aip.asrwakeup3.core.recog.listener.MessageStatusRecogListener;
 import com.baidu.aip.asrwakeup3.core.util.bluetooth.OfflineRecogParams;
+import com.baidu.aip.asrwakeup3.core.wakeup.MyWakeup;
 import com.baidu.speech.asr.SpeechConstant;
 
 import org.jetbrains.annotations.Nullable;
@@ -42,24 +45,40 @@ import resource.SpecialHashName;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button start;
+    private Button stop;
+    private Button cancel;
     private Button test;
-    private TextView requirement;
+    private AutoCompleteTextView requirement;
+    public boolean isfirst=true;
     private WakeUpService.WakeUpBinder wakeUpBinder;
     protected boolean enableOffline;
     public static final String TAG="weather";
     public static final int MANIFEST_CODE=0;
-    public boolean isFirstResuming=false;
     private HashName AppName=new HashName();
     private SpecialHashName specialHashName=new SpecialHashName();
     private NLP nlp;
     public static boolean ELE_RANDOM;
     public TextToVoice textToVoice;
+    public static String[] COUNTRIES={"打开...",
+            "搜索以...为关键词的外卖",
+            "用备忘录记录...",
+            "用备忘录查询有关于...(关键词)的内容",
+            "用备忘录查询日期为...(年月日)的内容",
+            "用备忘录删除所有内容",
+            "用备忘录删除有关于...(关键词)的内容",
+            "备忘录删除日期为...(年月日)的内容",
+            "备忘录删除日期为“...”，有关于...的内容",
+            "查询...市的天气",
+            "给...(QQ号)发送QQ消息...",
+            "给...发送微信消息...",
+            "给...(联系人)打电话",
+            "给...(联系人)发短信，内容为..."
+    };
     private ServiceConnection connection=new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             wakeUpBinder=(WakeUpService.WakeUpBinder)service;
             wakeUpBinder.start();
-            isFirstResuming=false;
         }
 
         @Override
@@ -86,6 +105,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void handleMsg(final Message message){
         final String requirement=message.obj.toString();
+        if(requirement.contains("[过程值]")) {
+            String process=requirement.substring(0,requirement.length()-6);
+            printTxt(process);
+            return;
+        }
+        printTxt(requirement);
         String judgement=Judge.judge(requirement);
         if(judgement.equals("1")) {
             Iterator iter = specialHashName.maps.entrySet().iterator();
@@ -136,18 +161,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("testEle",ELE_RANDOM+"");
                 if(ELE_RANDOM) {
                     DataBaseUtils.addAppItems("饿了吗");
-                    ELE_RANDOM=false;
                     randomSelect();
                 }
                 if(!ELE_RANDOM){
-                    Log.d("testEle","已进入饿了吗专区");
+                    Log.d("testELE","已进入饿了吗专区");
                     DataBaseUtils.addAppItems("饿了吗");
                     String key = EleHelper.getKey(requirement);
                     AccessService.ELE_saying = key;
+                    AccessService.ELE_saying_click=key;
                     List<String> list = new ArrayList<>();
                     list.add("饿了吗");
                     openActivity(list);
                 }
+                ELE_RANDOM=false;
             }
             if(judgement.equals(Judge.DIAL)){
                 DataBaseUtils.addAppItems("电话");
@@ -185,19 +211,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         String name=names.get(0);
         if(AppName.maps.containsKey(name)){
+            DataBaseUtils.addAppItems(name);
             PackageManager packageManager = getPackageManager();
             Intent intent =packageManager.getLaunchIntentForPackage(AppName.maps.get(name));
             startActivity(intent);
-            DataBaseUtils.addAppItems(name);
         }
     }
     public void randomSelect(){
         String store=EleHelper.analyse();
+        Log.d("testRandom",store);
         if(store!=null) {
             AccessService.ELE_saying = store;
+            AccessService.ELE_saying_click=store;
             AccessService.random = true;
             List<String> list=new LinkedList<>();
-            list.add(AppName.maps.get("饿了吗"));
+            list.add("饿了吗");
             openActivity(list);
         }
     }
@@ -216,17 +244,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(intent);
         Log.d("testFreq","ready to open FreqActivity");
     }
+    public void printTxt(String content){
+        this.requirement.setText(content);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("testLive","start");
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.d("testLive","create");
         initView();
         initPermission();
         initMyRecognizer();
-        isFirstResuming=true;
         nlp=new NLP();
         new ConnectThread().start();
         this.textToVoice=new TextToVoice(this);
+        LitePal.getDatabase();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -256,15 +295,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d("testLive","pause");
     }
 
     @Override
     protected void onStop() {
         myRecognizer.release();
-        Intent intent=new Intent(MainActivity.this,WakeUpService.class);
-        bindService(intent,connection,BIND_AUTO_CREATE);
-        Log.d("testWakeUp","now binding");
+        startService();
         super.onStop();
+        Log.d("testLive","stop");
     }
 
     /**
@@ -274,17 +313,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     protected void onResume() {
-        if(!isFirstResuming) {
-            unbindService(connection);
-            initMyRecognizer();
-            isFirstResuming=false;
-            Log.d("testWakeUp","first come in resume");
-        }
-        else
-            Log.d("testWakeUp","not first come in resume");
         super.onResume();
+        Intent intent = new Intent(this, WakeUpService.class);
+        stopService(intent);
+        Log.d("WakeUpService", "null");
+        Log.d("testLive","resume");
     }
-
+    public void startService(){
+        myRecognizer.release();
+        Intent intent=new Intent(MainActivity.this,WakeUpService.class);
+        bindService(intent,connection,BIND_AUTO_CREATE);
+        Log.d("WakeUpService","now binding");
+    }
     /**
      * 开始录音，点击“开始”按钮后调用。
      * 基于DEMO集成2.1, 2.2 设置识别参数并发送开始事件
@@ -322,7 +362,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 基于DEMO集成4.1 发送停止事件 停止录音
      */
     protected void stop() {
-
         myRecognizer.stop();
     }
 
@@ -332,9 +371,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 基于DEMO集成4.2 发送取消事件 取消本次识别
      */
     protected void cancel() {
-
+        this.requirement.setText("");
         myRecognizer.cancel();
+        textToVoice.stop();
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d("testLive","restart");
+        unbindService(connection);
+        initMyRecognizer();
+    }
+
     /**
      * 销毁时需要释放识别资源。
      */
@@ -349,14 +398,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Log.i(TAG, "onDestory");
 
         // BluetoothUtil.destory(this); // 蓝牙关闭
+        Log.d("testLive","destory");
 
         super.onDestroy();
     }
     private void initView(){
         start=(Button)findViewById(R.id.start);
+        stop=(Button)findViewById(R.id.stop);
+        cancel=(Button)findViewById(R.id.cancel);
         test=(Button)findViewById(R.id.test);
-        requirement=(TextView)findViewById(R.id.requirment);
+        requirement=(AutoCompleteTextView)findViewById(R.id.requirment);
+        ArrayAdapter adapter = new ArrayAdapter(this, //定义匹配源的adapter
+                android.R.layout.simple_dropdown_item_1line, COUNTRIES);
+        requirement.setThreshold(1); //设置最小提示字符数量为1
+        requirement.setAdapter(adapter); //为AutoCompleteTextView控件设置适配器
+        requirement.setDropDownHeight(800); //设置下拉框的高度
         start.setOnClickListener(this);
+        stop.setOnClickListener(this);
+        cancel.setOnClickListener(this);
         test.setOnClickListener(this);
     }
     private void initPermission() {
@@ -380,6 +439,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!toApplyList.isEmpty()) {
             ActivityCompat.requestPermissions(this, toApplyList.toArray(tmpList), MANIFEST_CODE);
         }
+    }
+    public void test(){
+        Message message=new Message();
+        message.obj="搜索以麻辣烫为关键词的外卖";
+        handleMsg(message);
     }
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode){
@@ -412,17 +476,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // BluetoothUtil.start(this,BluetoothUtil.FULL_MODE); // 蓝牙耳机开始，注意一部分手机这段代码无效
     }
-    private void callActivity(){
-        Message message=new Message();
-        message.obj = "用备忘录查询日期为2020年10月12日的内容";
-        handleMsg(message);
-        //Phone.callPhoneJump("15751763556",MainActivity.this);
-        //ArrayList<MyContacts> list=Phone.getAllContacts(MainActivity.this);
-        //Log.d("testWeather",list.toString());
-        //Phone.callPhoneThroughContacts("巫乐文",MainActivity.this);
-        //Phone.sendSMS("巫乐文","弱啊，巫乐文",MainActivity.this);
-
-    }
 
     class ConnectThread extends Thread{
         @Override
@@ -448,8 +501,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.start:
                 start();
                 break;
+            case R.id.stop:
+                stop();
+                break;
+            case R.id.cancel:
+                cancel();
+                break;
             case R.id.test:
-                callActivity();
+                test();
                 break;
             default:
                 break;

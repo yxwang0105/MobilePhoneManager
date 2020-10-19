@@ -18,7 +18,7 @@ public class WeatherHelper {
             @Override
             public void run() {
               Weather weather= new Weather(textToVoice);
-              weather.getLifeStyle(context,saying);
+              weather.getWeather(context,saying);
             }
         }).start();
     }
