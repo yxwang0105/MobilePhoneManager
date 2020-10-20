@@ -71,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             "查询...市的天气",
             "给...(QQ号)发送QQ消息...",
             "给...发送微信消息...",
+            "打开微信扫一扫",
+            "打开朋友圈",
             "给...(联系人)打电话",
             "给...(联系人)发短信，内容为..."
     };
@@ -142,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             if(judgement.equals(Judge.QQ)){
                 DataBaseUtils.addAppItems("QQ");
+                Toast.makeText(MainActivity.this,"正在进入"+"QQ",Toast.LENGTH_SHORT).show();
                 String people= QHelper.getPeople(requirement);
                 String content=QHelper.getContent(requirement);
                 AccessService.QQ_saying=content;
@@ -153,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String content=QHelper.getContent(requirement);
                 AccessService.WeChat_people=people;
                 AccessService.WeChat_saying=content;
+                Log.d("testWechat",people+"  "+content);
                 List<String> list=new ArrayList<>();
                 list.add("微信");
                 openActivity(list);
@@ -212,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String name=names.get(0);
         if(AppName.maps.containsKey(name)){
             DataBaseUtils.addAppItems(name);
+            Toast.makeText(MainActivity.this,"正在进入"+name,Toast.LENGTH_SHORT).show();
             PackageManager packageManager = getPackageManager();
             Intent intent =packageManager.getLaunchIntentForPackage(AppName.maps.get(name));
             startActivity(intent);
@@ -442,7 +447,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     public void test(){
         Message message=new Message();
-        message.obj="搜索以麻辣烫为关键词的外卖";
+        message.obj="用备忘录查询有关于";
         handleMsg(message);
     }
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

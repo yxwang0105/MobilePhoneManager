@@ -3,7 +3,6 @@ package com.example.mobilephonemanager;
 import android.util.Log;
 
 import org.litepal.LitePal;
-import org.litepal.crud.LitePalSupport;
 
 import java.util.List;
 
@@ -14,15 +13,18 @@ public class Memorandum {
     public static void getDatabase(){
         LitePal.getDatabase();
     }
-    public static void add(String buildTime,String content){
+    public static void add(String buildTime,String content,TextToVoice textToVoice){
         if(buildTime==null||content==null)
             return;
         Log.d("testMem","mem is doing");
         MemorandumData data=new MemorandumData();
         data.setBuildTime(buildTime);
         data.setContent(content);
-        data.save();
-        Log.d("testMem","mem is done");
+        boolean success=data.save();
+        if(success)
+            textToVoice.submit("成功存储");
+        else
+            textToVoice.submit("存储失败");
     }
     public static void delete(long id){
         LitePal.delete(MemorandumData.class,id);

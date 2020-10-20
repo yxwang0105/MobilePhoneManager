@@ -60,8 +60,10 @@ public class MemorandumHelper {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if(saying==null||"".equals(saying))
+                if(saying==null||"".equals(saying)) {
+                    textToVoice.submit("备忘录里没有您所需要的信息");
                     return;
+                }
                 NLP nlp=new NLP();
                 Log.d("testMem","nlp is done");
                 JSONObject jsonObject=nlp.getJSONObject(saying);
@@ -72,84 +74,92 @@ public class MemorandumHelper {
                     list.add("查询");
                 if(saying.substring(0,6).equals("用备忘录删除"))
                     list.add("删除");
-                Log.d("testMem",list.toString()+"  "+saying.substring(0,5));
+                Log.d("testMem",list.toString()+"  "+saying);
                 for(int i=0;i<list.size();i++){
-                    if(Double.parseDouble(nlp.sameScore(SAVE,list.get(i)))>0.5){
-                        Log.d("testMem","save");
-                        String save=MemorandumAdapter.getSaveContent(saying);
-                        Log.d("testMem",save);
-                        SimpleDateFormat formatter=new SimpleDateFormat   ("yyyy年MM月dd日");
-                        Date curDate =  new Date(System.currentTimeMillis());
-                        String str = formatter.format(curDate);
-                        Memorandum.add(str,save);
-                        Log.d("testMem",str);
+                    if(Double.parseDouble(nlp.sameScore(DELETE,list.get(i)))>0.5){
+                        delete(saying);
+                    }else if(Double.parseDouble(nlp.sameScore(SAVE,list.get(i)))>0.5){
+                        save(saying);
                     }else if(Double.parseDouble(nlp.sameScore(QUERY,list.get(i)))>0.5){
-                        String q1=MemorandumAdapter.getQueryDataModeOne(saying);
-                        String q2=MemorandumAdapter.getQueryDataModeTwo(saying);
-                        String query=null;
-                        boolean flag=false;
-                        if(q1==null&&q2==null)
-                            return;
-                        if(q1==null) {
-                            query = q2;
-                            Log.d("testMem","q2");
-                        }
-                        else {
-                            query = q1;
-                            Log.d("testMem","q1");
-                            flag=true;
-                        }
-                        List<MemorandumData> query_list=Memorandum.findAll();
-                        Log.d("testMem",query_list.toString());
-                        List<String> result=new LinkedList<>();
-                        if(flag==true){
-                            for(int j=0;j<query_list.size();j++)
-                                if(query_list.get(i).getContent().contains(query))
-                                    result.add(query_list.get(i).getContent());
-                        }
-                        else{
-                            for(int j=0;j<query_list.size();j++)
-                                if(query_list.get(i).getBuildTime().contains(query))
-                                    result.add(query_list.get(i).getContent());
-                                Log.d("testMem",result.toString());
-                        }
-                        for(int j=0;j<result.size();j++){
-                            String mem=result.get(j);
-                            textToVoice.submit(mem);
-                            try {
-                                Thread.sleep(500);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }else if(Double.parseDouble(nlp.sameScore(DELETE,list.get(i)))>0.5){
-                        Log.d("testMem",saying);
-                        Memorandum.getDatabase();
-                        int mode=MemorandumAdapter.getDeleteMode(saying);
-                        if(mode==0) {
-                            LitePal.deleteAll(MemorandumData.class,"id > ?","0");
-                        }
-                        else if(mode==1) {
-                            String[] data=MemorandumAdapter.getDeleteModeOne(saying);
-                            LitePal.deleteAll(MemorandumData.class,"buildTime=? and content=?",data[0],data[1]);
-                        }
-                        else if(mode==2){
-                            String data=MemorandumAdapter.getDeleteModeTwo(saying);
-                            LitePal.deleteAll(MemorandumData.class,"buildTime=?",data);
-                        }
-                        else if(mode==3){
-                            String data=MemorandumAdapter.getDeleteModeThree(saying);
-                            LitePal.deleteAll(MemorandumData.class,"content=?",data);
-                        }
-                        else
-                            return;
+                        query(saying);
                     }
-                        else
-                            return;
+                    else
+                        return;
                 }
             }
         }).start();
 
     }
-
+    public void delete(String saying){
+        Log.d("testMem",saying);
+        int mode=MemorandumAdapter.getDeleteMode(saying);
+        if(mode==0) {
+            LitePal.deleteAll(MemorandumData.class,"id > ?","0");
+            textToVoice.submit("已删除");
+        }
+        else if(mode==1) {
+            String[] data=MemorandumAdapter.getDeleteModeOne(saying);
+            LitePal.deleteAll(MemorandumData.class,"buildTime=? and content=?",data[0],data[1]);
+            textToVoice.submit("已删除");
+        }
+        else if(mode==2){
+            String data=MemorandumAdapter.getDeleteModeTwo(saying);
+            LitePal.deleteAll(MemorandumData.class,"buildTime=?",data);
+            textToVoice.submit("已删除");
+        }
+        else if(mode==3){
+            String data=MemorandumAdapter.getDeleteModeThree(saying);
+            LitePal.deleteAll(MemorandumData.class,"content=?",data);
+            textToVoice.submit("已删除");
+        }
+        else
+            return;
+    }
+    public void save(String saying){
+        Log.d("testMem","save");
+        String save=MemorandumAdapter.getSaveContent(saying);
+        Log.d("testMem",save);
+        SimpleDateFormat formatter=new SimpleDateFormat   ("yyyy年MM月dd日");
+        Date curDate =  new Date(System.currentTimeMillis());
+        String str = formatter.format(curDate);
+        Memorandum.add(str,save,textToVoice);
+        Log.d("testMem",str);
+    }
+    public void query(String saying){
+        String q1=MemorandumAdapter.getQueryDataModeOne(saying);
+        String q2=MemorandumAdapter.getQueryDataModeTwo(saying);
+        String query=null;
+        boolean flag=false;
+        if(q1==null&&q2==null)
+            return;
+        if(q1==null) {
+            query = q2;
+        }
+        else {
+            query = q1;
+            flag=true;
+        }
+        List<MemorandumData> query_list=Memorandum.findAll();
+        Log.d("testMem",query_list.toString()+query);
+        List<String> result=new LinkedList<>();
+        if(flag==true){
+            for(int j=0;j<query_list.size();j++)
+                if(query_list.get(j).getContent().contains(query))
+                    result.add(query_list.get(j).getContent());
+        }
+        else{
+            for(int j=0;j<query_list.size();j++)
+                if(query_list.get(j).getBuildTime().contains(query))
+                    result.add(query_list.get(j).getContent());
+        }
+        if(result.size()==0) {
+            textToVoice.submit("备忘录里没有您所需要的信息");
+            return;
+        }
+        Log.d("testMem", result.toString());
+        String final_result = "";
+        for (int j = 0; j < result.size(); j++)
+            final_result += result.get(j);
+        textToVoice.submit(final_result);
+    }
 }
