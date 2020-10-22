@@ -16,4 +16,9 @@
         android:title="创建数据库"
         app:showAsAction="never"
         />
+    <item
+        android:id="@+id/help"
+        android:icon="@drawable/ic_launcher_foreground"
+        android:title="帮助"
+        app:showAsAction="never"/>
 </menu>

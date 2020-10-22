@@ -91,7 +91,7 @@ public class MemorandumHelper {
 
     }
     public void delete(String saying){
-        Log.d("testMem",saying);
+        Log.d("testDelete",saying);
         int mode=MemorandumAdapter.getDeleteMode(saying);
         if(mode==0) {
             LitePal.deleteAll(MemorandumData.class,"id > ?","0");

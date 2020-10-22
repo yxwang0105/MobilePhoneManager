@@ -22,6 +22,8 @@ public class Judge {
             }
         }
         judgement+="1";
+        if(data.contains("备忘录"))
+            judgement="001";
         if(data.contains("QQ")&&data.contains("发送"))
             judgement+="0";
         if(data.contains("微信")&&data.contains("发送"))

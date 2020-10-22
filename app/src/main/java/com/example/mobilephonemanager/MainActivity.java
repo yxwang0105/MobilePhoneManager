@@ -1,4 +1,5 @@
 package com.example.mobilephonemanager;
+import androidx.annotation.LongDef;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -47,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button start;
     private Button stop;
     private Button cancel;
-    private Button test;
     private AutoCompleteTextView requirement;
     public boolean isfirst=true;
     private WakeUpService.WakeUpBinder wakeUpBinder;
@@ -59,7 +59,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private NLP nlp;
     public static boolean ELE_RANDOM;
     public TextToVoice textToVoice;
-    public static String[] COUNTRIES={"打开...",
+    public static String[] COUNTRIES={
+            "打开...",
             "搜索以...为关键词的外卖",
             "用备忘录记录...",
             "用备忘录查询有关于...(关键词)的内容",
@@ -69,12 +70,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             "备忘录删除日期为...(年月日)的内容",
             "备忘录删除日期为“...”，有关于...的内容",
             "查询...市的天气",
-            "给...(QQ号)发送QQ消息...",
+            "给...发送QQ消息...",
             "给...发送微信消息...",
             "打开微信扫一扫",
             "打开朋友圈",
             "给...(联系人)打电话",
-            "给...(联系人)发短信，内容为..."
+            "给...(联系人)发短信，内容为...",
+            "打开朋友圈",
+            "打开微信扫一扫"
     };
     private ServiceConnection connection=new ServiceConnection() {
         @Override
@@ -114,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         printTxt(requirement);
         String judgement=Judge.judge(requirement);
+        Log.d("testFriend",judgement);
         if(judgement.equals("1")) {
             Iterator iter = specialHashName.maps.entrySet().iterator();
             while (iter.hasNext()) {
@@ -132,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(judgement.equals(Judge.Memorandum)){
                 DataBaseUtils.addAppItems("内嵌备忘录");
                 MemorandumHelper memorandumHelper=new MemorandumHelper(textToVoice);
+                Log.d("testMem",requirement);
                 memorandumHelper.process(requirement);
             }
             if(judgement.equals(Judge.Weather)){
@@ -148,7 +153,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String people= QHelper.getPeople(requirement);
                 String content=QHelper.getContent(requirement);
                 AccessService.QQ_saying=content;
-                QHelper.openQQ(MainActivity.this,1,people);
+                Log.d("testQQ","原本的内容为"+content);
+                AccessService.QQ_people=people;
+               // QHelper.openQQ(MainActivity.this,1,people);
+                List<String> list=new ArrayList<>();
+                list.add("QQ");
+                openActivity(list);
             }
             if(judgement.equals(Judge.WeChat)){
                 DataBaseUtils.addAppItems("微信");
@@ -161,6 +171,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 list.add("微信");
                 openActivity(list);
             }
+            if(judgement.equals(Judge.SCAN)){
+                DataBaseUtils.addAppItems("微信");
+                AccessService.Scan=true;
+                List<String> list=new ArrayList<>();
+                list.add("微信");
+                openActivity(list);
+            }
+            if(judgement.equals(Judge.FRIEND)){
+                DataBaseUtils.addAppItems("微信");
+                AccessService.Friend=true;
+                List<String> list=new ArrayList<>();
+                list.add("微信");
+                openActivity(list);
+            }
             if(judgement.equals(Judge.ELE)){
                 Log.d("testEle",ELE_RANDOM+"");
                 if(ELE_RANDOM) {
@@ -168,11 +192,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     randomSelect();
                 }
                 if(!ELE_RANDOM){
-                    Log.d("testELE","已进入饿了吗专区");
+                    Log.d("testEle","已进入饿了吗专区");
                     DataBaseUtils.addAppItems("饿了吗");
                     String key = EleHelper.getKey(requirement);
                     AccessService.ELE_saying = key;
-                    AccessService.ELE_saying_click=key;
                     List<String> list = new ArrayList<>();
                     list.add("饿了吗");
                     openActivity(list);
@@ -224,10 +247,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     public void randomSelect(){
         String store=EleHelper.analyse();
-        Log.d("testRandom",store);
+        Log.d("testEle","已选择"+store);
         if(store!=null) {
             AccessService.ELE_saying = store;
-            AccessService.ELE_saying_click=store;
             AccessService.random = true;
             List<String> list=new LinkedList<>();
             list.add("饿了吗");
@@ -292,10 +314,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.database:
                 LitePal.getDatabase();
                 Toast.makeText(this, "创建数据库成功", Toast.LENGTH_SHORT).show();
+            case R.id.help:
+                Toast.makeText(this, "即将进入帮助界面", Toast.LENGTH_SHORT).show();
+                printHelp();
             default:
                 break;
         }
         return true;
+    }
+    public void printHelp(){
+        Intent intent=new Intent(MainActivity.this,HelpActivity.class);
+        startActivity(intent);
     }
     @Override
     protected void onPause() {
@@ -387,6 +416,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d("testLive","restart");
         unbindService(connection);
         initMyRecognizer();
+        requirement.setText("");
     }
 
     /**
@@ -411,7 +441,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         start=(Button)findViewById(R.id.start);
         stop=(Button)findViewById(R.id.stop);
         cancel=(Button)findViewById(R.id.cancel);
-        test=(Button)findViewById(R.id.test);
         requirement=(AutoCompleteTextView)findViewById(R.id.requirment);
         ArrayAdapter adapter = new ArrayAdapter(this, //定义匹配源的adapter
                 android.R.layout.simple_dropdown_item_1line, COUNTRIES);
@@ -421,7 +450,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         start.setOnClickListener(this);
         stop.setOnClickListener(this);
         cancel.setOnClickListener(this);
-        test.setOnClickListener(this);
     }
     private void initPermission() {
         String permissions[] = {
@@ -447,7 +475,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     public void test(){
         Message message=new Message();
-        message.obj="用备忘录查询有关于";
+        message.obj="用备忘录删除有关于天气的内容";
         handleMsg(message);
     }
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -511,9 +539,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.cancel:
                 cancel();
-                break;
-            case R.id.test:
-                test();
                 break;
             default:
                 break;

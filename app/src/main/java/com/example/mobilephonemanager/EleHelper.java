@@ -38,6 +38,7 @@ public class EleHelper {
                 temp.add(storeList.get(i));
         }
         storeList=temp;
+        Log.d("testEle","目前有"+storeList.size()+"条记录");
         if(storeList.size()==0)
             return null;
         else{
@@ -84,6 +85,7 @@ public class EleHelper {
                  max=i+1;
             }
             String target=storeArray[max];
+            Log.d("testEle","最多的记录为"+target);
             return target;
 
         }
