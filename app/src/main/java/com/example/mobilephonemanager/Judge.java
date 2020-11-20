@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class Judge {
     private static List<String> param=new LinkedList<>();
-    public static final String Memorandum="001",Weather="011",QQ="10",WeChat="11",ELE="100",DIAL="101",SMS="110",FRIEND="111",SCAN="1000";
+    public static final String Memorandum="001",Weather="011",QQ="10",WeChat="11",ELE="100",DIAL="101",SMS="110",FRIEND="111",SCAN="1000",Class_Table="1001",kuaidi="1010";
     static{
         param.add("备忘录");
         param.add("天气");
@@ -44,6 +44,12 @@ public class Judge {
         }
         if(data.contains("朋友圈")){
             judgement="111";
+        }
+        if(data.contains("课程表")){
+            judgement="1001";
+        }
+        if(data.contains("查询快递")){
+            judgement="1010";
         }
         return judgement;
 

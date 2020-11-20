@@ -62,7 +62,6 @@ public class AccessService extends AccessibilityService {
     }
 
     public boolean isselected() {
-        Log.d("testELE", "正在判断");
         if (QQ_saying == null && WeChat_people == null && WeChat_people == null && ELE_saying == null&&Scan==false&&Friend ==false)
             return false;
         return true;
@@ -76,6 +75,41 @@ public class AccessService extends AccessibilityService {
         int eventType = event.getEventType();
         switch (eventType) {
             case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
+                Log.d("testEle",event.getPackageName()+""+ELE_saying);
+                if ("me.ele".equals(event.getPackageName()) && ELE_saying != null) {
+                    Log.d("testEle","good0");
+                    if(first) {
+                        Log.d("testEle","good1");
+                        WechatUtils.findViewIdAndClick(mAccservice, "me.ele:id/asb");
+                        Log.d("testEle","good");
+                        first=false;
+                    }
+                    AccessibilityNodeInfo eleNodeInfo = mAccservice.getRootInActiveWindow();
+                    List<AccessibilityNodeInfo> editNodeList = null;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        editNodeList = eleNodeInfo.findAccessibilityNodeInfosByViewId("me.ele:id/a15");
+                    }
+                    if (editNodeList.size() != 0) {
+                        AccessibilityNodeInfo editInfo = editNodeList.get(0);
+                        Bundle arguments = new Bundle();
+                        arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, ELE_saying);
+                        editInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if (random == false) {
+                            Log.d("testEle", "正在搜索");
+                            WechatUtils.findTextAndClick(mAccservice, "搜索");
+                            this.storeRandom(ELE_saying);
+                        } else {
+                            WechatUtils.findViewIdAndClick(mAccservice, "me.ele:id/a3m");
+                            this.storeRandom(ELE_saying);
+                        }
+                        clear();
+                    }
+                }
                 if ("com.tencent.mobileqq".equals(event.getPackageName()) && QQ_saying != null && QQ_people != null) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                         Log.d("testQQ", "正在进入QQ");
@@ -173,37 +207,7 @@ public class AccessService extends AccessibilityService {
                     WechatUtils.findTextAndClick(mAccservice, "朋友圈");
                     Friend = false;
                 }
-                if ("me.ele".equals(event.getPackageName()) && ELE_saying != null) {
-                    if(first) {
-                        WechatUtils.findViewIdAndClick(mAccservice, "me.ele:id/asb");
-                        first=false;
-                    }
-                    AccessibilityNodeInfo eleNodeInfo = mAccservice.getRootInActiveWindow();
-                    List<AccessibilityNodeInfo> editNodeList = null;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        editNodeList = eleNodeInfo.findAccessibilityNodeInfosByViewId("me.ele:id/a15");
-                    }
-                    if (editNodeList.size() != 0) {
-                        AccessibilityNodeInfo editInfo = editNodeList.get(0);
-                        Bundle arguments = new Bundle();
-                        arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, ELE_saying);
-                        editInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        if (random == false) {
-                            Log.d("testEle", "正在搜索");
-                            WechatUtils.findTextAndClick(mAccservice, "搜索");
-                            this.storeRandom(ELE_saying);
-                        } else {
-                            WechatUtils.findViewIdAndClick(mAccservice, "me.ele:id/a3m");
-                            this.storeRandom(ELE_saying);
-                        }
-                        clear();
-                    }
-                }
+
         }
     }
 

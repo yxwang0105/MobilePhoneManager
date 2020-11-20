@@ -32,6 +32,8 @@ import com.baidu.aip.asrwakeup3.core.wakeup.MyWakeup;
 import com.baidu.speech.asr.SpeechConstant;
 
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 
@@ -59,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private NLP nlp;
     public static boolean ELE_RANDOM;
     public TextToVoice textToVoice;
+    private static final String APP_ID = "20201025000598370";
+    private static final String SECURITY_KEY = "DBIUQCmFkIERihfjHJsx";
     public static String[] COUNTRIES={
             "打开...",
             "搜索以...为关键词的外卖",
@@ -77,7 +81,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             "给...(联系人)打电话",
             "给...(联系人)发短信，内容为...",
             "打开朋友圈",
-            "打开微信扫一扫"
+            "打开微信扫一扫",
+            "打开课程表"
     };
     private ServiceConnection connection=new ServiceConnection() {
         @Override
@@ -152,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(MainActivity.this,"正在进入"+"QQ",Toast.LENGTH_SHORT).show();
                 String people= QHelper.getPeople(requirement);
                 String content=QHelper.getContent(requirement);
+                if(people==null||content==null)
+                    return;
                 AccessService.QQ_saying=content;
                 Log.d("testQQ","原本的内容为"+content);
                 AccessService.QQ_people=people;
@@ -164,6 +171,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 DataBaseUtils.addAppItems("微信");
                 String people=QHelper.getPeople(requirement);
                 String content=QHelper.getContent(requirement);
+                if(people==null||content==null)
+                    return;
                 AccessService.WeChat_people=people;
                 AccessService.WeChat_saying=content;
                 Log.d("testWechat",people+"  "+content);
@@ -195,6 +204,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d("testEle","已进入饿了吗专区");
                     DataBaseUtils.addAppItems("饿了吗");
                     String key = EleHelper.getKey(requirement);
+                    if(key==null)
+                        return;
                     AccessService.ELE_saying = key;
                     List<String> list = new ArrayList<>();
                     list.add("饿了吗");
@@ -205,17 +216,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(judgement.equals(Judge.DIAL)){
                 DataBaseUtils.addAppItems("电话");
                 String name=PhoneHelper.getPeopleTele(requirement);
+                if(name==null)
+                    return;
                 Phone.callPhoneThroughContacts(name,MainActivity.this);
             }
             if(judgement.equals(Judge.SMS)){
                 DataBaseUtils.addAppItems("短信");
                 String name=PhoneHelper.getPeopleSMS(requirement);
                 String content=PhoneHelper.getContent(requirement);
+                if(name==null||content==null)
+                    return;
                 Phone.sendSMS(name,content,MainActivity.this);
+            }
+            if(judgement.equals(Judge.Class_Table)){
+                DataBaseUtils.addAppItems("内置课程表");
+                Intent intent=new Intent(MainActivity.this,kechengbiaoActivity.class);
+                startActivity(intent);
+            }
+            if(judgement.equals(Judge.kuaidi)){
+                DataBaseUtils.addAppItems("内置查快递");
+                Intent intent=new Intent(MainActivity.this,KuaiDiActivity.class);
+                startActivity(intent);
             }
         }
     }
-
     /**
      * 用于自然语言分析线程
      * @param msg
@@ -314,9 +338,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.database:
                 LitePal.getDatabase();
                 Toast.makeText(this, "创建数据库成功", Toast.LENGTH_SHORT).show();
+                break;
             case R.id.help:
                 Toast.makeText(this, "即将进入帮助界面", Toast.LENGTH_SHORT).show();
                 printHelp();
+                break;
             default:
                 break;
         }
@@ -396,7 +422,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 基于DEMO集成4.1 发送停止事件 停止录音
      */
     protected void stop() {
-        myRecognizer.stop();
+       myRecognizer.stop();
     }
 
     /**
@@ -405,7 +431,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 基于DEMO集成4.2 发送取消事件 取消本次识别
      */
     protected void cancel() {
-        this.requirement.setText("");
+       this.requirement.setText("");
         myRecognizer.cancel();
         textToVoice.stop();
     }

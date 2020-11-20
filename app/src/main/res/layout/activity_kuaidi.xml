@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@mipmap/main_picture">
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/textView1"
+        android:layout_marginLeft="21dp"
+        android:layout_toRightOf="@+id/textView1"
+        android:orientation="horizontal" >
+        <RadioButton
+            android:id="@+id/STO"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="申通" />
+        <RadioButton
+            android:id="@+id/YTO"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="圆通" />
+        <RadioButton
+            android:id="@+id/HTKY"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="百世" />
+        <RadioButton
+            android:id="@+id/HHTT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="天天" />
+    </RadioGroup>
+    <EditText
+        android:id="@+id/input_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="请输入快递单号"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="500dp">
+        <TextView
+        android:id="@+id/output_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+            android:enabled="false"
+            android:minLines="50"/>
+    </ScrollView>
+    <Button
+        android:id="@+id/query"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="查询"
+        android:background="@drawable/start_selector"
+        android:layout_gravity="center_horizontal"
+        android:textAllCaps="false"/>
+    </LinearLayout>

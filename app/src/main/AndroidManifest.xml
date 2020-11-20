@@ -53,6 +53,17 @@
         <activity android:name=".FreqActivity"/>
         <activity android:name=".ComprehensiveFreqActivity"/>
         <activity android:name=".HelpActivity"/>
+        <activity android:name=".KuaiDiActivity"></activity>
+        <activity android:name=".kechengbiaoActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity
+            android:name=".AboutActivity"
+            android:label="关于"
+            android:theme="@style/Theme.AppCompat.Light.Dialog"/>
+        <activity
+            android:label="新建课程"
+            android:name=".AddCourseActivity"
+            android:theme="@style/Theme.AppCompat.Light.Dialog"/>
     </application>
 
 </manifest>

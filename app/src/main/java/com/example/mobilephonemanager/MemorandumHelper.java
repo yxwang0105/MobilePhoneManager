@@ -80,7 +80,7 @@ public class MemorandumHelper {
                         delete(saying);
                     }else if(Double.parseDouble(nlp.sameScore(SAVE,list.get(i)))>0.5){
                         save(saying);
-                    }else if(Double.parseDouble(nlp.sameScore(QUERY,list.get(i)))>0.5){
+                    }else if(list.get(i).equals("查询")){
                         query(saying);
                     }
                     else

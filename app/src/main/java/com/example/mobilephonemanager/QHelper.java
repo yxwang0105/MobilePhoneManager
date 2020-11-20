@@ -21,6 +21,9 @@ public class QHelper {
     public static String getContent(String saying){
         int loc=saying.indexOf("消息")+2;
         String content=saying.substring(loc,saying.length()-2);
+        while((",".equals(content.substring(0,1))||("，".equals(content.substring(0,1))))){
+            content=content.substring(1);
+        }
         return content;
     }
     public static void openQQ(Context mContext, int type, String qq) {

@@ -21,4 +21,9 @@
         android:icon="@drawable/ic_launcher_foreground"
         android:title="帮助"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/add_courses"
+        android:icon="@drawable/add"
+        android:title="添加/修改课程"
+        app:showAsAction="ifRoom"/>
 </menu>
